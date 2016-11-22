@@ -1,0 +1,49 @@
+< CODE for QUICK CHECK>
+- qc_allch.cpp
+- qc_onech.cpp
+=================================================================================================
+< CODE for EVALUATION TEST >
+
+
+1. "cal_eff.cpp" & "run_cal_eff.sh" : Calculate efficiencies
+     * set "LOCAL", "FILE_LIST", "CH_LIST", "DAC_LIST" in "run_cal_eff.sh".
+     * check if nsig_exp is correct.
+    (* set "fl_message = 0" and "fl_batch = true" at line 4-5 in "cal_eff.cpp")
+      =>  input file : ../root_data/output_*.root
+      => output file : dat_file/cal_eff.dat (used in maketree scurve.cpp)
+                       pic/output.root      (used in timing.cpp)
+		       pic/output_can{1,2}.pdf
+
+2. "maketree_scurve.cpp" & "run_maketree_scurve.sh" : Produce tree file (s-curve) and Fit s-curve for each channel
+     * set "INFILE" and "CH_LIST" in "run_maketree_scurve.sh"
+     * set "fl_batch" and "fl_plot" in "scurve.cpp"
+       =>   input file :  dat_file/cal_eff.dat
+       =>  output file : root_file/cal_eff_obschXXX_tpchYYY.root
+       ==>  input file : root_file/cal_eff_obschXXX_tpchYYY.root
+       ==> output file : pic/scurve_obschXXX_tpchYYY.root (used in threshold_calib.cpp)
+                         pic/scurve_can1.pdf
+                         pic/scurve_can2.pdf                   
+
+3. "threshold_calib.cpp" & "run_threshold_calib.sh"
+      =>  input file : pic/scurve_obschXXX_tpchYYY.root
+      => output file : threshold_calib.dat
+
+4(a). "timing.cpp" & "timewalk_width.cpp" & "run_timing.sh" : Evaluation of signal width and timewalk
+      =>   input file : pic/output.root
+      =>  output file : pic/timing_obsXXX_tpchYYY_dacZZ.eps
+      	  	        tmp.dat
+      ==>  input file : tmp.dat
+
+4(b). "timing.cpp" & "timewalk_width_allch.cpp" & "run_timing_allch.sh" : Evaluation of signal width and timewalk for all channel
+      =>   input file : pic/output.root
+      =>  output file : pic/timing_obsXXX_tpchYYY_dacZZ.eps
+      	  	        tmp.dat
+      ==>  input file : tmp.dat
+
+=================================================================================================
+< Other Codes >
+- offset_noise_gain.cpp
+ => input dat-file : (ch:offset:noise)
+- linearity.cpp
+- idac_sim.cpp
+- modify_tree.cpp
