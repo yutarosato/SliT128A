@@ -52,7 +52,6 @@ SampleMonitor::SampleMonitor(RTC::Manager* manager)
       t_unit(-999),
       t_time(-999)
 {
-  for( int iunit=0; iunit<n_unit; iunit++ ) fl_unit[iunit] = 0;
     // Registration: InPort/OutPort/Service
 
     // Set InPort buffers
@@ -293,6 +292,13 @@ int SampleMonitor::decode_data(const unsigned char* mydata, int length)
   unsigned short* event_number = (unsigned short*)&mydata[2];
 
   int ndata = (length-16)/8;
+  if( ndata!=32768 ){
+    printf( "=>[ Event#=%d : #Data=%d+3 ] * lost data event : not saved int tree\n", t_event, ndata );
+    nevt_fail++;
+    init_tree();
+    return 0;
+  }
+  
   if( fl_message > 0 ) printf( "       [ Event#=%d : #Data=%d : ", ntohs(*event_number), ndata );
   //t_event = ntohs(*event_number);
   int adjust = 0;
@@ -308,12 +314,11 @@ int SampleMonitor::decode_data(const unsigned char* mydata, int length)
     t_chip  = chip_id;
     t_unit  = unit_id;
     t_time = ntohs(*time_info);
-
+    
     t_unit = unit_id_mapping( t_unit ); // unit-ID correction
 
     for( int ibyte=0; ibyte<4; ibyte++ ){
       unsigned char byte_data = mydata[8*idata+adjust+8+ibyte];
-
       if( fl_message > 1 ) std::cout << "("
 				     << (int )((unsigned char)(byte_data)) << " : "
 				     << (bool)((unsigned char)(byte_data & 0x80)) << " "
@@ -345,31 +350,19 @@ int SampleMonitor::decode_data(const unsigned char* mydata, int length)
 	}
       }
     }
-
+    
     //if( idata%5000==0 ) std::cout << idata << std::endl;
     //if( t_unit!=3 ) continue;
-    fl_unit[t_unit]++;
     if( idata < 3) adjust += 4;
   }
-    {
-      int tmp_fl = 1;
-      for( int iunit=0; iunit<n_unit; iunit++ ) tmp_fl *= (int)((bool)fl_unit[iunit]);
-      if( tmp_fl==1 ){
-        if( fl_message   ) printf( "=>[ Event#=%d : #Data=%d+3 ]\n", t_event, ndata );
-	if( ndata!=32768 ){
-	  printf( "=>[ Event#=%d : #Data=%d+3 ] * lost data event : not saved int tree\n", t_event, ndata );
-	  nevt_fail++;
-	}else{
-	  m_tree->Fill();
-	  cnt_data += t_time_v.size();
-	  nevt_success++;
-	}
-	
-	init_tree();
-	for( int iunit=0; iunit<n_unit; iunit++ ) fl_unit[iunit] = 0;
-      }
-    }
-     
+  {
+    if( fl_message ) printf( "=>[ Event#=%d : #Data=%d+3 ]\n", t_event, ndata );
+    m_tree->Fill();
+    cnt_data += t_time_v.size();
+    nevt_success++;
+    init_tree();
+  }
+  
   return 0;
 }
 

@@ -101,7 +101,6 @@ private:
 
   int nevt_success;
   int nevt_fail;
-  int fl_unit[n_unit];
   
   int cnt_data; // used for judgement of the endpoint of s-curve
   
