@@ -169,7 +169,7 @@ Int_t main( Int_t argc, Char_t** argv ){
     if( tp_ch  != t_selch ) continue; // test puse channel
     for( Int_t ivec=0; ivec<t_unit_v->size(); ivec++ ){
       if( obs_ch != ch_map(t_unit_v->at(ivec),t_bit_v->at(ivec)) ) continue; // observed channel
-      hist_1ch    ->Fill( t_time_v->at(ivec) );
+      hist_1ch->Fill( t_time_v->at(ivec) );
       for( Int_t idiv=0; idiv<ndiv; idiv++ ) hist_1ch_div[idiv]->Fill( t_time_v->at(ivec) );
     }
     

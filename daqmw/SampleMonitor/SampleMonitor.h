@@ -16,11 +16,14 @@
 
 ////////// ROOT Include files //////////
 #include "TH1.h"
+#include "TTree.h"
 #include "TCanvas.h"
 #include "TStyle.h"
 #include "TApplication.h"
 
 #include "SampleData.h"
+
+#include <vector>
 
 using namespace RTC;
 
@@ -58,14 +61,23 @@ private:
   
   unsigned int read_InPort();
   //int online_analyze();
+
+  int set_tree();
+  int init_tree();
+  int delete_tree();
+  int unit_id_mapping( int unit );
+  int bit_flip( bool bit );
+  int set_readbranch     ();
+  int set_readbranch_scan();
   int decode_data(const unsigned char* mydata, int length);
   int fill_data(const unsigned char* mydata, const int size);
+  int ch_map( int unit, int bit );
   
   BufferStatus m_in_status;
   
   ////////// ROOT Histogram //////////
   TCanvas *m_canvas;
-  TH1F    *m_hist;
+  TH1I    *m_hist;
   int      m_bin;
   double   m_min;
   double   m_max;
@@ -75,6 +87,8 @@ private:
   unsigned char m_recv_data[DATA_BUF_SIZE];
   unsigned int  m_event_byte_size;
   struct sampleData m_sampleData;
+
+  TTree* m_tree;
   
   bool m_debug;
 };
