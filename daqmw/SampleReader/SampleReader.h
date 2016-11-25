@@ -53,7 +53,8 @@ private:
   DAQMW::Sock* m_sock;               /// socket for data server
   
   static const int EVENT_BYTE_SIZE  = 8;    // event byte size
-  static const int SEND_BUFFER_SIZE = 1024; //
+  //static const int SEND_BUFFER_SIZE = 1024; //
+  static const int SEND_BUFFER_SIZE = (8192*8+4)*4+1024; // 262160 + 1024; 1024 is spare
   static const int DATA_STEP        = 4;
   
   unsigned char m_data[SEND_BUFFER_SIZE];

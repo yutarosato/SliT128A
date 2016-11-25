@@ -67,7 +67,7 @@ int fill_event_buf( FILE *fp, unsigned char *event_buf ){ // 0(correctly read on
   static bool first_read = true;
   static unsigned char tmpbuf[4];
   int event_data_len = 0;
-  
+
   if( first_read ){
     n = read_4_bytes( fp, tmpbuf );
     if( n <= 0 ) return -1;
@@ -105,6 +105,7 @@ int fill_event_buf( FILE *fp, unsigned char *event_buf ){ // 0(correctly read on
       if( n <= 0 ) return -1;
     }
   }
+
   
   return 0;
 }

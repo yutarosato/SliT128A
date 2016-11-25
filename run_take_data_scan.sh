@@ -9,7 +9,7 @@ set TPCHG    =  11.52 # Test pulse charge [fC] : 3.84 fC = 38.4 mV * 100fF (@1MI
 set CH_LIST = `seq 0 127`
 
 set CTRL_DAC_LIST = `seq -31 31`
-#set CTRL_DAC_LIST = 17
+#set CTRL_DAC_LIST = 31
 
 ###########################################
 (cd decoder; make;)

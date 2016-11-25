@@ -9,8 +9,6 @@
 
 #include "SampleReader.h"
 
-const int fl_message = 0; // 0(simple message), 1(normal message), 2(detailed message)
-
 using DAQMW::FatalType::DATAPATH_DISCONNECTED;
 using DAQMW::FatalType::OUTPORT_ERROR;
 using DAQMW::FatalType::USER_DEFINED_ERROR1;
@@ -200,8 +198,9 @@ int SampleReader::read_data_from_detectors()
 
     /// write your logic here
     static bool first_read = true;
-    static unsigned char tmpbuf[4];
+    static unsigned char tmpbuf[8];
     int event_data_len = 0;
+    int n_multi = 11;
     
     if( first_read ){ // first time: read from file. after second time stored in tmpbuf
       int status = m_sock->readAll(&m_data[0], DATA_STEP);
@@ -216,12 +215,13 @@ int SampleReader::read_data_from_detectors()
       }
       first_read = false;
     }else{
-      memcpy( m_data, tmpbuf, DATA_STEP );  // to be checked !!!
-      event_data_len += DATA_STEP;
+      memcpy( m_data, tmpbuf, 2*DATA_STEP );
+      event_data_len += 2*DATA_STEP;
+      n_multi = 10;
     }
 
     { // 2-12 times
-      int status = m_sock->readAll(&m_data[event_data_len], 11*DATA_STEP);
+      int status = m_sock->readAll(&m_data[event_data_len], n_multi*DATA_STEP);
       if( status == DAQMW::Sock::ERROR_FATAL ){
 	std::cerr << "### ERROR: m_sock->readAll" << std::endl;
 	fatal_error_report(USER_DEFINED_ERROR1, "SOCKET FATAL ERROR");
@@ -229,12 +229,13 @@ int SampleReader::read_data_from_detectors()
 	std::cerr << "### Timeout: m_sock->readAll" << std::endl;
 	fatal_error_report(USER_DEFINED_ERROR2, "SOCKET TIMEOUT");
       }else{
-	event_data_len += 11*DATA_STEP;
+	event_data_len += n_multi*DATA_STEP;
       }
     }
-    
+
     while(1){
-      int status = m_sock->readAll(&m_data[event_data_len], DATA_STEP);
+      int status = m_sock->readAll(&m_data[event_data_len], 2*DATA_STEP);
+    
       if( status == DAQMW::Sock::ERROR_FATAL ){
         std::cerr << "### ERROR: m_sock->readAll" << std::endl;
         fatal_error_report(USER_DEFINED_ERROR1, "SOCKET FATAL ERROR");
@@ -242,44 +243,16 @@ int SampleReader::read_data_from_detectors()
         std::cerr << "### Timeout: m_sock->readAll" << std::endl;
         fatal_error_report(USER_DEFINED_ERROR2, "SOCKET TIMEOUT");
       }
-      
-      if( (tmpbuf[0] & 0x80) == 0x00 ){ // end of the event
-	if( fl_message > 0 ) printf( "    fill_event_buf done %d bytes\n", event_data_len);
+
+      if( (m_data[event_data_len] & 0x80) == 0x00 ){ // end of the event
+	//printf( "    fill_event_buf done %d bytes\n", event_data_len);
 	memcpy( &m_data[event_data_len], tmpbuf, DATA_STEP );
 	return event_data_len;
       }else{ // continue the event
-        event_data_len += DATA_STEP;
-	
-	int status = m_sock->readAll(&m_data[event_data_len], DATA_STEP);	
-	if( status == DAQMW::Sock::ERROR_FATAL ){
-	  std::cerr << "### ERROR: m_sock->readAll" << std::endl;
-	  fatal_error_report(USER_DEFINED_ERROR1, "SOCKET FATAL ERROR");
-	}else if( status == DAQMW::Sock::ERROR_TIMEOUT ){
-	  std::cerr << "### Timeout: m_sock->readAll" << std::endl;
-	  fatal_error_report(USER_DEFINED_ERROR2, "SOCKET TIMEOUT");
-	}else{
-	  event_data_len += DATA_STEP;
-	}
+        event_data_len += 2*DATA_STEP;
       }
     }
 
-    /* // original code
-    int received_data_size = 0;
-    /// read 1024 byte data from data server
-    int status = m_sock->readAll(m_data, SEND_BUFFER_SIZE);
-    if (status == DAQMW::Sock::ERROR_FATAL) {
-        std::cerr << "### ERROR: m_sock->readAll" << std::endl;
-        fatal_error_report(USER_DEFINED_ERROR1, "SOCKET FATAL ERROR");
-    }
-    else if (status == DAQMW::Sock::ERROR_TIMEOUT) {
-        std::cerr << "### Timeout: m_sock->readAll" << std::endl;
-        fatal_error_report(USER_DEFINED_ERROR2, "SOCKET TIMEOUT");
-    }
-    else {
-        received_data_size = SEND_BUFFER_SIZE;
-    }
-    return received_data_size;
-    */
 }
 
 int SampleReader::set_data(unsigned int data_byte_size)

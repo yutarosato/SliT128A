@@ -83,7 +83,7 @@ private:
   double   m_max;
   int      m_monitor_update_rate;
   //const static unsigned int DATA_BUF_SIZE = 1024*1024;
-  const static unsigned int DATA_BUF_SIZE = 32765;
+  const static unsigned int DATA_BUF_SIZE = (8192*8+4)*4+1024; // 262160 + 1024; 1024 is spare
   unsigned char m_recv_data[DATA_BUF_SIZE];
   unsigned int  m_event_byte_size;
   struct sampleData m_sampleData;
@@ -91,6 +91,36 @@ private:
   TTree* m_tree;
   
   bool m_debug;
+
+
+  const static int fl_message = 1; // 0(simple message), 1(normal message), 2(detailed message)
+  const static int n_chip =     1; // temporal setting
+  const static int n_unit =     4;
+  const static int n_bit  =    32;
+  const static int n_time =  8192; // pow(2,13)
+
+  int nevt_success;
+  int nevt_fail;
+  int fl_unit[n_unit];
+  
+  int cnt_data; // used for judgement of the endpoint of s-curve
+  
+  int t_event;
+  std::vector<int> t_chip_v; // for write
+  std::vector<int> t_unit_v;
+  std::vector<int> t_bit_v;
+  std::vector<int> t_time_v;
+
+  std::vector<int>* t2_chip_v; // for read
+  std::vector<int>* t2_unit_v;
+  std::vector<int>* t2_bit_v;
+  std::vector<int>* t2_time_v;
+
+  int t_chip;
+  int t_unit;
+  int t_time;
+  int t_data[n_bit];
+  
 };
 
 

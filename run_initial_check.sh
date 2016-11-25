@@ -33,7 +33,7 @@ end
 #./slit128sc -d control.dat 192.168.10.16;
 
 set OUTNAME = "test.dat"
-
+#exit
 # <Take Data>
 cd ../
 nc -d 192.168.10.16 24 > test.dat &
