@@ -173,11 +173,11 @@ _objref_DAQService::_ptrToObjRef(const char* id)
 
 // Proxy call descriptor class. Mangled signature:
 //  _cDAQLifeCycleState
-class _0RL_cd_e6c5c158a9b04088_00000000
+class _0RL_cd_E6C5C158A9B04088_00000000
   : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_e6c5c158a9b04088_00000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+  inline _0RL_cd_E6C5C158A9B04088_00000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
      omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
     
@@ -193,27 +193,27 @@ public:
   DAQLifeCycleState result;
 };
 
-void _0RL_cd_e6c5c158a9b04088_00000000::marshalReturnedValues(cdrStream& _n)
+void _0RL_cd_E6C5C158A9B04088_00000000::marshalReturnedValues(cdrStream& _n)
 {
   result >>= _n;
 
 }
 
-void _0RL_cd_e6c5c158a9b04088_00000000::unmarshalReturnedValues(cdrStream& _n)
+void _0RL_cd_E6C5C158A9B04088_00000000::unmarshalReturnedValues(cdrStream& _n)
 {
   (DAQLifeCycleState&)result <<= _n;
 
 }
 
-const char* const _0RL_cd_e6c5c158a9b04088_00000000::_user_exns[] = {
+const char* const _0RL_cd_E6C5C158A9B04088_00000000::_user_exns[] = {
   0
 };
 
 // Local call call-back function.
 static void
-_0RL_lcfn_e6c5c158a9b04088_10000000(omniCallDescriptor* cd, omniServant* svnt)
+_0RL_lcfn_E6C5C158A9B04088_10000000(omniCallDescriptor* cd, omniServant* svnt)
 {
-  _0RL_cd_e6c5c158a9b04088_00000000* tcd = (_0RL_cd_e6c5c158a9b04088_00000000*)cd;
+  _0RL_cd_E6C5C158A9B04088_00000000* tcd = (_0RL_cd_E6C5C158A9B04088_00000000*)cd;
   _impl_DAQService* impl = (_impl_DAQService*) svnt->_ptrToInterface(DAQService::_PD_repoId);
   tcd->result = impl->getState();
 
@@ -222,7 +222,7 @@ _0RL_lcfn_e6c5c158a9b04088_10000000(omniCallDescriptor* cd, omniServant* svnt)
 
 DAQLifeCycleState _objref_DAQService::getState()
 {
-  _0RL_cd_e6c5c158a9b04088_00000000 _call_desc(_0RL_lcfn_e6c5c158a9b04088_10000000, "getState", 9);
+  _0RL_cd_E6C5C158A9B04088_00000000 _call_desc(_0RL_lcfn_E6C5C158A9B04088_10000000, "getState", 9);
 
 
   _invoke(_call_desc);
@@ -232,11 +232,11 @@ DAQLifeCycleState _objref_DAQService::getState()
 }
 // Proxy call descriptor class. Mangled signature:
 //  _cRTC_mReturnCode__t_i_cDAQCommand
-class _0RL_cd_e6c5c158a9b04088_20000000
+class _0RL_cd_E6C5C158A9B04088_20000000
   : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_e6c5c158a9b04088_20000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+  inline _0RL_cd_E6C5C158A9B04088_20000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
      omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
     
@@ -255,39 +255,39 @@ public:
   RTC::ReturnCode_t result;
 };
 
-void _0RL_cd_e6c5c158a9b04088_20000000::marshalArguments(cdrStream& _n)
+void _0RL_cd_E6C5C158A9B04088_20000000::marshalArguments(cdrStream& _n)
 {
   arg_0 >>= _n;
 
 }
 
-void _0RL_cd_e6c5c158a9b04088_20000000::unmarshalArguments(cdrStream& _n)
+void _0RL_cd_E6C5C158A9B04088_20000000::unmarshalArguments(cdrStream& _n)
 {
   (DAQCommand&)arg_0 <<= _n;
 
 }
 
-void _0RL_cd_e6c5c158a9b04088_20000000::marshalReturnedValues(cdrStream& _n)
+void _0RL_cd_E6C5C158A9B04088_20000000::marshalReturnedValues(cdrStream& _n)
 {
   result >>= _n;
 
 }
 
-void _0RL_cd_e6c5c158a9b04088_20000000::unmarshalReturnedValues(cdrStream& _n)
+void _0RL_cd_E6C5C158A9B04088_20000000::unmarshalReturnedValues(cdrStream& _n)
 {
   (RTC::ReturnCode_t&)result <<= _n;
 
 }
 
-const char* const _0RL_cd_e6c5c158a9b04088_20000000::_user_exns[] = {
+const char* const _0RL_cd_E6C5C158A9B04088_20000000::_user_exns[] = {
   0
 };
 
 // Local call call-back function.
 static void
-_0RL_lcfn_e6c5c158a9b04088_30000000(omniCallDescriptor* cd, omniServant* svnt)
+_0RL_lcfn_E6C5C158A9B04088_30000000(omniCallDescriptor* cd, omniServant* svnt)
 {
-  _0RL_cd_e6c5c158a9b04088_20000000* tcd = (_0RL_cd_e6c5c158a9b04088_20000000*)cd;
+  _0RL_cd_E6C5C158A9B04088_20000000* tcd = (_0RL_cd_E6C5C158A9B04088_20000000*)cd;
   _impl_DAQService* impl = (_impl_DAQService*) svnt->_ptrToInterface(DAQService::_PD_repoId);
   tcd->result = impl->setCommand(tcd->arg_0);
 
@@ -296,7 +296,7 @@ _0RL_lcfn_e6c5c158a9b04088_30000000(omniCallDescriptor* cd, omniServant* svnt)
 
 RTC::ReturnCode_t _objref_DAQService::setCommand(::DAQCommand command)
 {
-  _0RL_cd_e6c5c158a9b04088_20000000 _call_desc(_0RL_lcfn_e6c5c158a9b04088_30000000, "setCommand", 11);
+  _0RL_cd_E6C5C158A9B04088_20000000 _call_desc(_0RL_lcfn_E6C5C158A9B04088_30000000, "setCommand", 11);
   _call_desc.arg_0 = command;
 
   _invoke(_call_desc);
@@ -306,11 +306,11 @@ RTC::ReturnCode_t _objref_DAQService::setCommand(::DAQCommand command)
 }
 // Proxy call descriptor class. Mangled signature:
 //  _cDAQCommand
-class _0RL_cd_e6c5c158a9b04088_40000000
+class _0RL_cd_E6C5C158A9B04088_40000000
   : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_e6c5c158a9b04088_40000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+  inline _0RL_cd_E6C5C158A9B04088_40000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
      omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
     
@@ -326,27 +326,27 @@ public:
   DAQCommand result;
 };
 
-void _0RL_cd_e6c5c158a9b04088_40000000::marshalReturnedValues(cdrStream& _n)
+void _0RL_cd_E6C5C158A9B04088_40000000::marshalReturnedValues(cdrStream& _n)
 {
   result >>= _n;
 
 }
 
-void _0RL_cd_e6c5c158a9b04088_40000000::unmarshalReturnedValues(cdrStream& _n)
+void _0RL_cd_E6C5C158A9B04088_40000000::unmarshalReturnedValues(cdrStream& _n)
 {
   (DAQCommand&)result <<= _n;
 
 }
 
-const char* const _0RL_cd_e6c5c158a9b04088_40000000::_user_exns[] = {
+const char* const _0RL_cd_E6C5C158A9B04088_40000000::_user_exns[] = {
   0
 };
 
 // Local call call-back function.
 static void
-_0RL_lcfn_e6c5c158a9b04088_50000000(omniCallDescriptor* cd, omniServant* svnt)
+_0RL_lcfn_E6C5C158A9B04088_50000000(omniCallDescriptor* cd, omniServant* svnt)
 {
-  _0RL_cd_e6c5c158a9b04088_40000000* tcd = (_0RL_cd_e6c5c158a9b04088_40000000*)cd;
+  _0RL_cd_E6C5C158A9B04088_40000000* tcd = (_0RL_cd_E6C5C158A9B04088_40000000*)cd;
   _impl_DAQService* impl = (_impl_DAQService*) svnt->_ptrToInterface(DAQService::_PD_repoId);
   tcd->result = impl->getCommand();
 
@@ -355,7 +355,7 @@ _0RL_lcfn_e6c5c158a9b04088_50000000(omniCallDescriptor* cd, omniServant* svnt)
 
 DAQCommand _objref_DAQService::getCommand()
 {
-  _0RL_cd_e6c5c158a9b04088_40000000 _call_desc(_0RL_lcfn_e6c5c158a9b04088_50000000, "getCommand", 11);
+  _0RL_cd_E6C5C158A9B04088_40000000 _call_desc(_0RL_lcfn_E6C5C158A9B04088_50000000, "getCommand", 11);
 
 
   _invoke(_call_desc);
@@ -365,11 +365,11 @@ DAQCommand _objref_DAQService::getCommand()
 }
 // Proxy call descriptor class. Mangled signature:
 //  _cDAQDone
-class _0RL_cd_e6c5c158a9b04088_60000000
+class _0RL_cd_E6C5C158A9B04088_60000000
   : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_e6c5c158a9b04088_60000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+  inline _0RL_cd_E6C5C158A9B04088_60000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
      omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
     
@@ -385,27 +385,27 @@ public:
   DAQDone result;
 };
 
-void _0RL_cd_e6c5c158a9b04088_60000000::marshalReturnedValues(cdrStream& _n)
+void _0RL_cd_E6C5C158A9B04088_60000000::marshalReturnedValues(cdrStream& _n)
 {
   result >>= _n;
 
 }
 
-void _0RL_cd_e6c5c158a9b04088_60000000::unmarshalReturnedValues(cdrStream& _n)
+void _0RL_cd_E6C5C158A9B04088_60000000::unmarshalReturnedValues(cdrStream& _n)
 {
   (DAQDone&)result <<= _n;
 
 }
 
-const char* const _0RL_cd_e6c5c158a9b04088_60000000::_user_exns[] = {
+const char* const _0RL_cd_E6C5C158A9B04088_60000000::_user_exns[] = {
   0
 };
 
 // Local call call-back function.
 static void
-_0RL_lcfn_e6c5c158a9b04088_70000000(omniCallDescriptor* cd, omniServant* svnt)
+_0RL_lcfn_E6C5C158A9B04088_70000000(omniCallDescriptor* cd, omniServant* svnt)
 {
-  _0RL_cd_e6c5c158a9b04088_60000000* tcd = (_0RL_cd_e6c5c158a9b04088_60000000*)cd;
+  _0RL_cd_E6C5C158A9B04088_60000000* tcd = (_0RL_cd_E6C5C158A9B04088_60000000*)cd;
   _impl_DAQService* impl = (_impl_DAQService*) svnt->_ptrToInterface(DAQService::_PD_repoId);
   tcd->result = impl->checkDone();
 
@@ -414,7 +414,7 @@ _0RL_lcfn_e6c5c158a9b04088_70000000(omniCallDescriptor* cd, omniServant* svnt)
 
 DAQDone _objref_DAQService::checkDone()
 {
-  _0RL_cd_e6c5c158a9b04088_60000000 _call_desc(_0RL_lcfn_e6c5c158a9b04088_70000000, "checkDone", 10);
+  _0RL_cd_E6C5C158A9B04088_60000000 _call_desc(_0RL_lcfn_E6C5C158A9B04088_70000000, "checkDone", 10);
 
 
   _invoke(_call_desc);
@@ -424,11 +424,11 @@ DAQDone _objref_DAQService::checkDone()
 }
 // Proxy call descriptor class. Mangled signature:
 //  void
-class _0RL_cd_e6c5c158a9b04088_80000000
+class _0RL_cd_E6C5C158A9B04088_80000000
   : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_e6c5c158a9b04088_80000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+  inline _0RL_cd_E6C5C158A9B04088_80000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
      omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
     
@@ -442,13 +442,13 @@ public:
   
 };
 
-const char* const _0RL_cd_e6c5c158a9b04088_80000000::_user_exns[] = {
+const char* const _0RL_cd_E6C5C158A9B04088_80000000::_user_exns[] = {
   0
 };
 
 // Local call call-back function.
 static void
-_0RL_lcfn_e6c5c158a9b04088_90000000(omniCallDescriptor*, omniServant* svnt)
+_0RL_lcfn_E6C5C158A9B04088_90000000(omniCallDescriptor*, omniServant* svnt)
 {
   
   _impl_DAQService* impl = (_impl_DAQService*) svnt->_ptrToInterface(DAQService::_PD_repoId);
@@ -459,7 +459,7 @@ _0RL_lcfn_e6c5c158a9b04088_90000000(omniCallDescriptor*, omniServant* svnt)
 
 void _objref_DAQService::setDone()
 {
-  _0RL_cd_e6c5c158a9b04088_80000000 _call_desc(_0RL_lcfn_e6c5c158a9b04088_90000000, "setDone", 8);
+  _0RL_cd_E6C5C158A9B04088_80000000 _call_desc(_0RL_lcfn_E6C5C158A9B04088_90000000, "setDone", 8);
 
 
   _invoke(_call_desc);
@@ -469,11 +469,11 @@ void _objref_DAQService::setDone()
 }
 // Proxy call descriptor class. Mangled signature:
 //  void_i_cStatus
-class _0RL_cd_e6c5c158a9b04088_a0000000
+class _0RL_cd_E6C5C158A9B04088_a0000000
   : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_e6c5c158a9b04088_a0000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+  inline _0RL_cd_E6C5C158A9B04088_a0000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
      omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
     
@@ -490,13 +490,13 @@ public:
   const Status* arg_0;
 };
 
-void _0RL_cd_e6c5c158a9b04088_a0000000::marshalArguments(cdrStream& _n)
+void _0RL_cd_E6C5C158A9B04088_a0000000::marshalArguments(cdrStream& _n)
 {
   (const Status&) *arg_0 >>= _n;
 
 }
 
-void _0RL_cd_e6c5c158a9b04088_a0000000::unmarshalArguments(cdrStream& _n)
+void _0RL_cd_E6C5C158A9B04088_a0000000::unmarshalArguments(cdrStream& _n)
 {
   arg_0_ = new Status;
   (Status&)arg_0_ <<= _n;
@@ -504,15 +504,15 @@ void _0RL_cd_e6c5c158a9b04088_a0000000::unmarshalArguments(cdrStream& _n)
 
 }
 
-const char* const _0RL_cd_e6c5c158a9b04088_a0000000::_user_exns[] = {
+const char* const _0RL_cd_E6C5C158A9B04088_a0000000::_user_exns[] = {
   0
 };
 
 // Local call call-back function.
 static void
-_0RL_lcfn_e6c5c158a9b04088_b0000000(omniCallDescriptor* cd, omniServant* svnt)
+_0RL_lcfn_E6C5C158A9B04088_b0000000(omniCallDescriptor* cd, omniServant* svnt)
 {
-  _0RL_cd_e6c5c158a9b04088_a0000000* tcd = (_0RL_cd_e6c5c158a9b04088_a0000000*)cd;
+  _0RL_cd_E6C5C158A9B04088_a0000000* tcd = (_0RL_cd_E6C5C158A9B04088_a0000000*)cd;
   _impl_DAQService* impl = (_impl_DAQService*) svnt->_ptrToInterface(DAQService::_PD_repoId);
   impl->setStatus(*tcd->arg_0);
 
@@ -521,7 +521,7 @@ _0RL_lcfn_e6c5c158a9b04088_b0000000(omniCallDescriptor* cd, omniServant* svnt)
 
 void _objref_DAQService::setStatus(const ::Status& stat)
 {
-  _0RL_cd_e6c5c158a9b04088_a0000000 _call_desc(_0RL_lcfn_e6c5c158a9b04088_b0000000, "setStatus", 10);
+  _0RL_cd_E6C5C158A9B04088_a0000000 _call_desc(_0RL_lcfn_E6C5C158A9B04088_b0000000, "setStatus", 10);
   _call_desc.arg_0 = &(::Status&) stat;
 
   _invoke(_call_desc);
@@ -531,11 +531,11 @@ void _objref_DAQService::setStatus(const ::Status& stat)
 }
 // Proxy call descriptor class. Mangled signature:
 //  _cStatus
-class _0RL_cd_e6c5c158a9b04088_c0000000
+class _0RL_cd_E6C5C158A9B04088_c0000000
   : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_e6c5c158a9b04088_c0000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+  inline _0RL_cd_E6C5C158A9B04088_c0000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
      omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
     
@@ -551,28 +551,28 @@ public:
   Status_var result;
 };
 
-void _0RL_cd_e6c5c158a9b04088_c0000000::marshalReturnedValues(cdrStream& _n)
+void _0RL_cd_E6C5C158A9B04088_c0000000::marshalReturnedValues(cdrStream& _n)
 {
   (const Status&) result >>= _n;
 
 }
 
-void _0RL_cd_e6c5c158a9b04088_c0000000::unmarshalReturnedValues(cdrStream& _n)
+void _0RL_cd_E6C5C158A9B04088_c0000000::unmarshalReturnedValues(cdrStream& _n)
 {
   result = new Status;
   (Status&)result <<= _n;
 
 }
 
-const char* const _0RL_cd_e6c5c158a9b04088_c0000000::_user_exns[] = {
+const char* const _0RL_cd_E6C5C158A9B04088_c0000000::_user_exns[] = {
   0
 };
 
 // Local call call-back function.
 static void
-_0RL_lcfn_e6c5c158a9b04088_d0000000(omniCallDescriptor* cd, omniServant* svnt)
+_0RL_lcfn_E6C5C158A9B04088_d0000000(omniCallDescriptor* cd, omniServant* svnt)
 {
-  _0RL_cd_e6c5c158a9b04088_c0000000* tcd = (_0RL_cd_e6c5c158a9b04088_c0000000*)cd;
+  _0RL_cd_E6C5C158A9B04088_c0000000* tcd = (_0RL_cd_E6C5C158A9B04088_c0000000*)cd;
   _impl_DAQService* impl = (_impl_DAQService*) svnt->_ptrToInterface(DAQService::_PD_repoId);
   tcd->result = impl->getStatus();
 
@@ -581,7 +581,7 @@ _0RL_lcfn_e6c5c158a9b04088_d0000000(omniCallDescriptor* cd, omniServant* svnt)
 
 Status* _objref_DAQService::getStatus()
 {
-  _0RL_cd_e6c5c158a9b04088_c0000000 _call_desc(_0RL_lcfn_e6c5c158a9b04088_d0000000, "getStatus", 10);
+  _0RL_cd_E6C5C158A9B04088_c0000000 _call_desc(_0RL_lcfn_E6C5C158A9B04088_d0000000, "getStatus", 10);
 
 
   _invoke(_call_desc);
@@ -591,11 +591,11 @@ Status* _objref_DAQService::getStatus()
 }
 // Proxy call descriptor class. Mangled signature:
 //  void_i_cNVList
-class _0RL_cd_e6c5c158a9b04088_e0000000
+class _0RL_cd_E6C5C158A9B04088_e0000000
   : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_e6c5c158a9b04088_e0000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+  inline _0RL_cd_E6C5C158A9B04088_e0000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
      omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
     
@@ -612,13 +612,13 @@ public:
   const NVList* arg_0;
 };
 
-void _0RL_cd_e6c5c158a9b04088_e0000000::marshalArguments(cdrStream& _n)
+void _0RL_cd_E6C5C158A9B04088_e0000000::marshalArguments(cdrStream& _n)
 {
   (const NVList&) *arg_0 >>= _n;
 
 }
 
-void _0RL_cd_e6c5c158a9b04088_e0000000::unmarshalArguments(cdrStream& _n)
+void _0RL_cd_E6C5C158A9B04088_e0000000::unmarshalArguments(cdrStream& _n)
 {
   arg_0_ = new NVList;
   (NVList&)arg_0_ <<= _n;
@@ -626,15 +626,15 @@ void _0RL_cd_e6c5c158a9b04088_e0000000::unmarshalArguments(cdrStream& _n)
 
 }
 
-const char* const _0RL_cd_e6c5c158a9b04088_e0000000::_user_exns[] = {
+const char* const _0RL_cd_E6C5C158A9B04088_e0000000::_user_exns[] = {
   0
 };
 
 // Local call call-back function.
 static void
-_0RL_lcfn_e6c5c158a9b04088_f0000000(omniCallDescriptor* cd, omniServant* svnt)
+_0RL_lcfn_E6C5C158A9B04088_f0000000(omniCallDescriptor* cd, omniServant* svnt)
 {
-  _0RL_cd_e6c5c158a9b04088_e0000000* tcd = (_0RL_cd_e6c5c158a9b04088_e0000000*)cd;
+  _0RL_cd_E6C5C158A9B04088_e0000000* tcd = (_0RL_cd_E6C5C158A9B04088_e0000000*)cd;
   _impl_DAQService* impl = (_impl_DAQService*) svnt->_ptrToInterface(DAQService::_PD_repoId);
   impl->setCompParams(*tcd->arg_0);
 
@@ -643,7 +643,7 @@ _0RL_lcfn_e6c5c158a9b04088_f0000000(omniCallDescriptor* cd, omniServant* svnt)
 
 void _objref_DAQService::setCompParams(const ::NVList& comp_params)
 {
-  _0RL_cd_e6c5c158a9b04088_e0000000 _call_desc(_0RL_lcfn_e6c5c158a9b04088_f0000000, "setCompParams", 14);
+  _0RL_cd_E6C5C158A9B04088_e0000000 _call_desc(_0RL_lcfn_E6C5C158A9B04088_f0000000, "setCompParams", 14);
   _call_desc.arg_0 = &(::NVList&) comp_params;
 
   _invoke(_call_desc);
@@ -653,11 +653,11 @@ void _objref_DAQService::setCompParams(const ::NVList& comp_params)
 }
 // Proxy call descriptor class. Mangled signature:
 //  _cNVList
-class _0RL_cd_e6c5c158a9b04088_01000000
+class _0RL_cd_E6C5C158A9B04088_01000000
   : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_e6c5c158a9b04088_01000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+  inline _0RL_cd_E6C5C158A9B04088_01000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
      omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
     
@@ -673,28 +673,28 @@ public:
   NVList_var result;
 };
 
-void _0RL_cd_e6c5c158a9b04088_01000000::marshalReturnedValues(cdrStream& _n)
+void _0RL_cd_E6C5C158A9B04088_01000000::marshalReturnedValues(cdrStream& _n)
 {
   (const NVList&) result >>= _n;
 
 }
 
-void _0RL_cd_e6c5c158a9b04088_01000000::unmarshalReturnedValues(cdrStream& _n)
+void _0RL_cd_E6C5C158A9B04088_01000000::unmarshalReturnedValues(cdrStream& _n)
 {
   result = new NVList;
   (NVList&)result <<= _n;
 
 }
 
-const char* const _0RL_cd_e6c5c158a9b04088_01000000::_user_exns[] = {
+const char* const _0RL_cd_E6C5C158A9B04088_01000000::_user_exns[] = {
   0
 };
 
 // Local call call-back function.
 static void
-_0RL_lcfn_e6c5c158a9b04088_11000000(omniCallDescriptor* cd, omniServant* svnt)
+_0RL_lcfn_E6C5C158A9B04088_11000000(omniCallDescriptor* cd, omniServant* svnt)
 {
-  _0RL_cd_e6c5c158a9b04088_01000000* tcd = (_0RL_cd_e6c5c158a9b04088_01000000*)cd;
+  _0RL_cd_E6C5C158A9B04088_01000000* tcd = (_0RL_cd_E6C5C158A9B04088_01000000*)cd;
   _impl_DAQService* impl = (_impl_DAQService*) svnt->_ptrToInterface(DAQService::_PD_repoId);
   tcd->result = impl->getCompParams();
 
@@ -703,7 +703,7 @@ _0RL_lcfn_e6c5c158a9b04088_11000000(omniCallDescriptor* cd, omniServant* svnt)
 
 NVList* _objref_DAQService::getCompParams()
 {
-  _0RL_cd_e6c5c158a9b04088_01000000 _call_desc(_0RL_lcfn_e6c5c158a9b04088_11000000, "getCompParams", 14);
+  _0RL_cd_E6C5C158A9B04088_01000000 _call_desc(_0RL_lcfn_E6C5C158A9B04088_11000000, "getCompParams", 14);
 
 
   _invoke(_call_desc);
@@ -713,11 +713,11 @@ NVList* _objref_DAQService::getCompParams()
 }
 // Proxy call descriptor class. Mangled signature:
 //  void_i_clong
-class _0RL_cd_e6c5c158a9b04088_21000000
+class _0RL_cd_E6C5C158A9B04088_21000000
   : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_e6c5c158a9b04088_21000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+  inline _0RL_cd_E6C5C158A9B04088_21000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
      omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
     
@@ -733,27 +733,27 @@ public:
   ::CORBA::Long arg_0;
 };
 
-void _0RL_cd_e6c5c158a9b04088_21000000::marshalArguments(cdrStream& _n)
+void _0RL_cd_E6C5C158A9B04088_21000000::marshalArguments(cdrStream& _n)
 {
   arg_0 >>= _n;
 
 }
 
-void _0RL_cd_e6c5c158a9b04088_21000000::unmarshalArguments(cdrStream& _n)
+void _0RL_cd_E6C5C158A9B04088_21000000::unmarshalArguments(cdrStream& _n)
 {
   (::CORBA::Long&)arg_0 <<= _n;
 
 }
 
-const char* const _0RL_cd_e6c5c158a9b04088_21000000::_user_exns[] = {
+const char* const _0RL_cd_E6C5C158A9B04088_21000000::_user_exns[] = {
   0
 };
 
 // Local call call-back function.
 static void
-_0RL_lcfn_e6c5c158a9b04088_31000000(omniCallDescriptor* cd, omniServant* svnt)
+_0RL_lcfn_E6C5C158A9B04088_31000000(omniCallDescriptor* cd, omniServant* svnt)
 {
-  _0RL_cd_e6c5c158a9b04088_21000000* tcd = (_0RL_cd_e6c5c158a9b04088_21000000*)cd;
+  _0RL_cd_E6C5C158A9B04088_21000000* tcd = (_0RL_cd_E6C5C158A9B04088_21000000*)cd;
   _impl_DAQService* impl = (_impl_DAQService*) svnt->_ptrToInterface(DAQService::_PD_repoId);
   impl->setRunNo(tcd->arg_0);
 
@@ -762,7 +762,7 @@ _0RL_lcfn_e6c5c158a9b04088_31000000(omniCallDescriptor* cd, omniServant* svnt)
 
 void _objref_DAQService::setRunNo(::CORBA::Long run_no)
 {
-  _0RL_cd_e6c5c158a9b04088_21000000 _call_desc(_0RL_lcfn_e6c5c158a9b04088_31000000, "setRunNo", 9);
+  _0RL_cd_E6C5C158A9B04088_21000000 _call_desc(_0RL_lcfn_E6C5C158A9B04088_31000000, "setRunNo", 9);
   _call_desc.arg_0 = run_no;
 
   _invoke(_call_desc);
@@ -772,11 +772,11 @@ void _objref_DAQService::setRunNo(::CORBA::Long run_no)
 }
 // Proxy call descriptor class. Mangled signature:
 //  _clong
-class _0RL_cd_e6c5c158a9b04088_41000000
+class _0RL_cd_E6C5C158A9B04088_41000000
   : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_e6c5c158a9b04088_41000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+  inline _0RL_cd_E6C5C158A9B04088_41000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
      omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
     
@@ -792,27 +792,27 @@ public:
   ::CORBA::Long result;
 };
 
-void _0RL_cd_e6c5c158a9b04088_41000000::marshalReturnedValues(cdrStream& _n)
+void _0RL_cd_E6C5C158A9B04088_41000000::marshalReturnedValues(cdrStream& _n)
 {
   result >>= _n;
 
 }
 
-void _0RL_cd_e6c5c158a9b04088_41000000::unmarshalReturnedValues(cdrStream& _n)
+void _0RL_cd_E6C5C158A9B04088_41000000::unmarshalReturnedValues(cdrStream& _n)
 {
   (::CORBA::Long&)result <<= _n;
 
 }
 
-const char* const _0RL_cd_e6c5c158a9b04088_41000000::_user_exns[] = {
+const char* const _0RL_cd_E6C5C158A9B04088_41000000::_user_exns[] = {
   0
 };
 
 // Local call call-back function.
 static void
-_0RL_lcfn_e6c5c158a9b04088_51000000(omniCallDescriptor* cd, omniServant* svnt)
+_0RL_lcfn_E6C5C158A9B04088_51000000(omniCallDescriptor* cd, omniServant* svnt)
 {
-  _0RL_cd_e6c5c158a9b04088_41000000* tcd = (_0RL_cd_e6c5c158a9b04088_41000000*)cd;
+  _0RL_cd_E6C5C158A9B04088_41000000* tcd = (_0RL_cd_E6C5C158A9B04088_41000000*)cd;
   _impl_DAQService* impl = (_impl_DAQService*) svnt->_ptrToInterface(DAQService::_PD_repoId);
   tcd->result = impl->getRunNo();
 
@@ -821,7 +821,7 @@ _0RL_lcfn_e6c5c158a9b04088_51000000(omniCallDescriptor* cd, omniServant* svnt)
 
 ::CORBA::Long _objref_DAQService::getRunNo()
 {
-  _0RL_cd_e6c5c158a9b04088_41000000 _call_desc(_0RL_lcfn_e6c5c158a9b04088_51000000, "getRunNo", 9);
+  _0RL_cd_E6C5C158A9B04088_41000000 _call_desc(_0RL_lcfn_E6C5C158A9B04088_51000000, "getRunNo", 9);
 
 
   _invoke(_call_desc);
@@ -831,11 +831,11 @@ _0RL_lcfn_e6c5c158a9b04088_51000000(omniCallDescriptor* cd, omniServant* svnt)
 }
 // Proxy call descriptor class. Mangled signature:
 //  void_i_cFatalErrorStatus
-class _0RL_cd_e6c5c158a9b04088_61000000
+class _0RL_cd_E6C5C158A9B04088_61000000
   : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_e6c5c158a9b04088_61000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+  inline _0RL_cd_E6C5C158A9B04088_61000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
      omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
     
@@ -852,13 +852,13 @@ public:
   const FatalErrorStatus* arg_0;
 };
 
-void _0RL_cd_e6c5c158a9b04088_61000000::marshalArguments(cdrStream& _n)
+void _0RL_cd_E6C5C158A9B04088_61000000::marshalArguments(cdrStream& _n)
 {
   (const FatalErrorStatus&) *arg_0 >>= _n;
 
 }
 
-void _0RL_cd_e6c5c158a9b04088_61000000::unmarshalArguments(cdrStream& _n)
+void _0RL_cd_E6C5C158A9B04088_61000000::unmarshalArguments(cdrStream& _n)
 {
   arg_0_ = new FatalErrorStatus;
   (FatalErrorStatus&)arg_0_ <<= _n;
@@ -866,15 +866,15 @@ void _0RL_cd_e6c5c158a9b04088_61000000::unmarshalArguments(cdrStream& _n)
 
 }
 
-const char* const _0RL_cd_e6c5c158a9b04088_61000000::_user_exns[] = {
+const char* const _0RL_cd_E6C5C158A9B04088_61000000::_user_exns[] = {
   0
 };
 
 // Local call call-back function.
 static void
-_0RL_lcfn_e6c5c158a9b04088_71000000(omniCallDescriptor* cd, omniServant* svnt)
+_0RL_lcfn_E6C5C158A9B04088_71000000(omniCallDescriptor* cd, omniServant* svnt)
 {
-  _0RL_cd_e6c5c158a9b04088_61000000* tcd = (_0RL_cd_e6c5c158a9b04088_61000000*)cd;
+  _0RL_cd_E6C5C158A9B04088_61000000* tcd = (_0RL_cd_E6C5C158A9B04088_61000000*)cd;
   _impl_DAQService* impl = (_impl_DAQService*) svnt->_ptrToInterface(DAQService::_PD_repoId);
   impl->setFatalStatus(*tcd->arg_0);
 
@@ -883,7 +883,7 @@ _0RL_lcfn_e6c5c158a9b04088_71000000(omniCallDescriptor* cd, omniServant* svnt)
 
 void _objref_DAQService::setFatalStatus(const ::FatalErrorStatus& fatalStaus)
 {
-  _0RL_cd_e6c5c158a9b04088_61000000 _call_desc(_0RL_lcfn_e6c5c158a9b04088_71000000, "setFatalStatus", 15);
+  _0RL_cd_E6C5C158A9B04088_61000000 _call_desc(_0RL_lcfn_E6C5C158A9B04088_71000000, "setFatalStatus", 15);
   _call_desc.arg_0 = &(::FatalErrorStatus&) fatalStaus;
 
   _invoke(_call_desc);
@@ -893,11 +893,11 @@ void _objref_DAQService::setFatalStatus(const ::FatalErrorStatus& fatalStaus)
 }
 // Proxy call descriptor class. Mangled signature:
 //  _cFatalErrorStatus
-class _0RL_cd_e6c5c158a9b04088_81000000
+class _0RL_cd_E6C5C158A9B04088_81000000
   : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_e6c5c158a9b04088_81000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+  inline _0RL_cd_E6C5C158A9B04088_81000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
      omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
     
@@ -913,28 +913,28 @@ public:
   FatalErrorStatus_var result;
 };
 
-void _0RL_cd_e6c5c158a9b04088_81000000::marshalReturnedValues(cdrStream& _n)
+void _0RL_cd_E6C5C158A9B04088_81000000::marshalReturnedValues(cdrStream& _n)
 {
   (const FatalErrorStatus&) result >>= _n;
 
 }
 
-void _0RL_cd_e6c5c158a9b04088_81000000::unmarshalReturnedValues(cdrStream& _n)
+void _0RL_cd_E6C5C158A9B04088_81000000::unmarshalReturnedValues(cdrStream& _n)
 {
   result = new FatalErrorStatus;
   (FatalErrorStatus&)result <<= _n;
 
 }
 
-const char* const _0RL_cd_e6c5c158a9b04088_81000000::_user_exns[] = {
+const char* const _0RL_cd_E6C5C158A9B04088_81000000::_user_exns[] = {
   0
 };
 
 // Local call call-back function.
 static void
-_0RL_lcfn_e6c5c158a9b04088_91000000(omniCallDescriptor* cd, omniServant* svnt)
+_0RL_lcfn_E6C5C158A9B04088_91000000(omniCallDescriptor* cd, omniServant* svnt)
 {
-  _0RL_cd_e6c5c158a9b04088_81000000* tcd = (_0RL_cd_e6c5c158a9b04088_81000000*)cd;
+  _0RL_cd_E6C5C158A9B04088_81000000* tcd = (_0RL_cd_E6C5C158A9B04088_81000000*)cd;
   _impl_DAQService* impl = (_impl_DAQService*) svnt->_ptrToInterface(DAQService::_PD_repoId);
   tcd->result = impl->getFatalStatus();
 
@@ -943,7 +943,7 @@ _0RL_lcfn_e6c5c158a9b04088_91000000(omniCallDescriptor* cd, omniServant* svnt)
 
 FatalErrorStatus* _objref_DAQService::getFatalStatus()
 {
-  _0RL_cd_e6c5c158a9b04088_81000000 _call_desc(_0RL_lcfn_e6c5c158a9b04088_91000000, "getFatalStatus", 15);
+  _0RL_cd_E6C5C158A9B04088_81000000 _call_desc(_0RL_lcfn_E6C5C158A9B04088_91000000, "getFatalStatus", 15);
 
 
   _invoke(_call_desc);
@@ -982,7 +982,7 @@ _impl_DAQService::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "getState") ) {
 
-    _0RL_cd_e6c5c158a9b04088_00000000 _call_desc(_0RL_lcfn_e6c5c158a9b04088_10000000, "getState", 9, 1);
+    _0RL_cd_E6C5C158A9B04088_00000000 _call_desc(_0RL_lcfn_E6C5C158A9B04088_10000000, "getState", 9, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -990,7 +990,7 @@ _impl_DAQService::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "setCommand") ) {
 
-    _0RL_cd_e6c5c158a9b04088_20000000 _call_desc(_0RL_lcfn_e6c5c158a9b04088_30000000, "setCommand", 11, 1);
+    _0RL_cd_E6C5C158A9B04088_20000000 _call_desc(_0RL_lcfn_E6C5C158A9B04088_30000000, "setCommand", 11, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -998,7 +998,7 @@ _impl_DAQService::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "getCommand") ) {
 
-    _0RL_cd_e6c5c158a9b04088_40000000 _call_desc(_0RL_lcfn_e6c5c158a9b04088_50000000, "getCommand", 11, 1);
+    _0RL_cd_E6C5C158A9B04088_40000000 _call_desc(_0RL_lcfn_E6C5C158A9B04088_50000000, "getCommand", 11, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -1006,7 +1006,7 @@ _impl_DAQService::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "checkDone") ) {
 
-    _0RL_cd_e6c5c158a9b04088_60000000 _call_desc(_0RL_lcfn_e6c5c158a9b04088_70000000, "checkDone", 10, 1);
+    _0RL_cd_E6C5C158A9B04088_60000000 _call_desc(_0RL_lcfn_E6C5C158A9B04088_70000000, "checkDone", 10, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -1014,7 +1014,7 @@ _impl_DAQService::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "setDone") ) {
 
-    _0RL_cd_e6c5c158a9b04088_80000000 _call_desc(_0RL_lcfn_e6c5c158a9b04088_90000000, "setDone", 8, 1);
+    _0RL_cd_E6C5C158A9B04088_80000000 _call_desc(_0RL_lcfn_E6C5C158A9B04088_90000000, "setDone", 8, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -1022,7 +1022,7 @@ _impl_DAQService::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "setStatus") ) {
 
-    _0RL_cd_e6c5c158a9b04088_a0000000 _call_desc(_0RL_lcfn_e6c5c158a9b04088_b0000000, "setStatus", 10, 1);
+    _0RL_cd_E6C5C158A9B04088_a0000000 _call_desc(_0RL_lcfn_E6C5C158A9B04088_b0000000, "setStatus", 10, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -1030,7 +1030,7 @@ _impl_DAQService::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "getStatus") ) {
 
-    _0RL_cd_e6c5c158a9b04088_c0000000 _call_desc(_0RL_lcfn_e6c5c158a9b04088_d0000000, "getStatus", 10, 1);
+    _0RL_cd_E6C5C158A9B04088_c0000000 _call_desc(_0RL_lcfn_E6C5C158A9B04088_d0000000, "getStatus", 10, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -1038,7 +1038,7 @@ _impl_DAQService::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "setCompParams") ) {
 
-    _0RL_cd_e6c5c158a9b04088_e0000000 _call_desc(_0RL_lcfn_e6c5c158a9b04088_f0000000, "setCompParams", 14, 1);
+    _0RL_cd_E6C5C158A9B04088_e0000000 _call_desc(_0RL_lcfn_E6C5C158A9B04088_f0000000, "setCompParams", 14, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -1046,7 +1046,7 @@ _impl_DAQService::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "getCompParams") ) {
 
-    _0RL_cd_e6c5c158a9b04088_01000000 _call_desc(_0RL_lcfn_e6c5c158a9b04088_11000000, "getCompParams", 14, 1);
+    _0RL_cd_E6C5C158A9B04088_01000000 _call_desc(_0RL_lcfn_E6C5C158A9B04088_11000000, "getCompParams", 14, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -1054,7 +1054,7 @@ _impl_DAQService::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "setRunNo") ) {
 
-    _0RL_cd_e6c5c158a9b04088_21000000 _call_desc(_0RL_lcfn_e6c5c158a9b04088_31000000, "setRunNo", 9, 1);
+    _0RL_cd_E6C5C158A9B04088_21000000 _call_desc(_0RL_lcfn_E6C5C158A9B04088_31000000, "setRunNo", 9, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -1062,7 +1062,7 @@ _impl_DAQService::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "getRunNo") ) {
 
-    _0RL_cd_e6c5c158a9b04088_41000000 _call_desc(_0RL_lcfn_e6c5c158a9b04088_51000000, "getRunNo", 9, 1);
+    _0RL_cd_E6C5C158A9B04088_41000000 _call_desc(_0RL_lcfn_E6C5C158A9B04088_51000000, "getRunNo", 9, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -1070,7 +1070,7 @@ _impl_DAQService::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "setFatalStatus") ) {
 
-    _0RL_cd_e6c5c158a9b04088_61000000 _call_desc(_0RL_lcfn_e6c5c158a9b04088_71000000, "setFatalStatus", 15, 1);
+    _0RL_cd_E6C5C158A9B04088_61000000 _call_desc(_0RL_lcfn_E6C5C158A9B04088_71000000, "setFatalStatus", 15, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -1078,7 +1078,7 @@ _impl_DAQService::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "getFatalStatus") ) {
 
-    _0RL_cd_e6c5c158a9b04088_81000000 _call_desc(_0RL_lcfn_e6c5c158a9b04088_91000000, "getFatalStatus", 15, 1);
+    _0RL_cd_E6C5C158A9B04088_81000000 _call_desc(_0RL_lcfn_E6C5C158A9B04088_91000000, "getFatalStatus", 15, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;

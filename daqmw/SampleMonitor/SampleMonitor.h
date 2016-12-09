@@ -21,7 +21,6 @@
 #include "TStyle.h"
 #include "TApplication.h"
 
-#include "SampleData.h"
 #include "../MTree/MTree.h"
 
 #include <vector>
@@ -78,26 +77,17 @@ private:
   const static unsigned int DATA_BUF_SIZE = (8192*8+4)*4+1024; // 262160 + 1024; 1024 is spare
   unsigned char m_recv_data[DATA_BUF_SIZE];
   unsigned int  m_event_byte_size;
-  struct sampleData m_sampleData;
 
-  MTree* m_tree;
-  int m_nevt_success;
-  int m_nevt_fail;
-
-<<<<<<< HEAD
-  bool m_debug;
   const static int fl_message = 0; // 0(simple message), 1(normal message), 2(detailed message)
-=======
-  const static int fl_message = 1; // 0(simple message), 1(normal message), 2(detailed message)
   const static int n_chip =     1; // temporal setting
   const static int n_unit =     4;
   const static int n_bit  =    32;
   const static int n_time =  8192; // pow(2,13)
 
-  int nevt_success;
-  int nevt_fail;
-  
-  int cnt_data; // used for judgement of the endpoint of s-curve
+  MTree* m_tree;
+  int m_nevt_success;
+  int m_nevt_fail;
+  bool m_debug;
   
   int t_event;
   std::vector<int> t_chip_v; // for write
@@ -109,13 +99,6 @@ private:
   std::vector<int>* t2_unit_v;
   std::vector<int>* t2_bit_v;
   std::vector<int>* t2_time_v;
-
-  int t_chip;
-  int t_unit;
-  int t_time;
-  int t_data[n_bit];
->>>>>>> 583a0a9e040e41d937a36b380fca4bbcbbd0a4e5
-  
 };
 
 

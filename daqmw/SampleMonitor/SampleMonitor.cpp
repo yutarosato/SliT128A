@@ -48,7 +48,7 @@ SampleMonitor::SampleMonitor(RTC::Manager* manager)
       m_nevt_fail(0),
       m_debug(false)
 {
-<<<<<<< HEAD
+
   // Registration: InPort/OutPort/Service
   
   // Set InPort buffers
@@ -57,12 +57,6 @@ SampleMonitor::SampleMonitor(RTC::Manager* manager)
   init_command_port();
   init_state_table();
   set_comp_name("SAMPLEMONITOR");
-=======
-    // Registration: InPort/OutPort/Service
-
-    // Set InPort buffers
-    registerInPort ("samplemonitor_in",  m_InPort);
->>>>>>> 583a0a9e040e41d937a36b380fca4bbcbbd0a4e5
 
   m_tree = new MTree();
 }
@@ -234,102 +228,12 @@ int SampleMonitor::reset_InPort()
 
 int SampleMonitor::fill_data(const unsigned char* mydata, const int size)
 {
-<<<<<<< HEAD
-
   if( m_tree->decode_data(mydata, size) ){ // false
     m_nevt_fail++;
   }else{ // success
     m_nevt_success++;
   }
   for( Int_t ivec=0; ivec<m_tree->getnhit(); ivec++ ){
-=======
-  unsigned short* event_number = (unsigned short*)&mydata[2];
-
-  int ndata = (length-16)/8;
-  if( ndata!=32768 ){
-    printf( "=>[ Event#=%d : #Data=%d+3 ] * lost data event : not saved int tree\n", t_event, ndata );
-    nevt_fail++;
-    init_tree();
-    return 0;
-  }
-  
-  if( fl_message > 0 ) printf( "       [ Event#=%d : #Data=%d : ", ntohs(*event_number), ndata );
-  //t_event = ntohs(*event_number);
-  int adjust = 0;
-  for( int idata=0; idata<ndata; idata++ ){
-    unsigned char   chip_id   = mydata[8*idata+adjust+4]; chip_id = ( chip_id & 0x7f );
-    unsigned char   unit_id   = mydata[8*idata+adjust+5];
-    unsigned short* time_info = (unsigned short*)&mydata[8*idata+adjust+6];
-    unsigned long*  data      = (unsigned long* )&mydata[8*idata+adjust+8];
-    if( idata==0 && (int)unit_id==0 ) t_event = ntohs(*event_number);
-    if( idata==0 && fl_message > 0 ) printf( "Unit-ID=%d ] \n", (int)unit_id );
-    if( fl_message > 1 ) printf( "%3d : (Chip-ID=%d, Unit-ID=%d) : (time=%d, data=%x)\n", idata, (int)chip_id, (int)unit_id, ntohs(*time_info), ntohl(*data) );
-
-    t_chip  = chip_id;
-    t_unit  = unit_id;
-    t_time = ntohs(*time_info);
-    
-    t_unit = unit_id_mapping( t_unit ); // unit-ID correction
-
-    for( int ibyte=0; ibyte<4; ibyte++ ){
-      unsigned char byte_data = mydata[8*idata+adjust+8+ibyte];
-      if( fl_message > 1 ) std::cout << "("
-				     << (int )((unsigned char)(byte_data)) << " : "
-				     << (bool)((unsigned char)(byte_data & 0x80)) << " "
-				     << (bool)((unsigned char)(byte_data & 0x40)) << " "
-				     << (bool)((unsigned char)(byte_data & 0x20)) << " "
-				     << (bool)((unsigned char)(byte_data & 0x10)) << "  "
-				     << (bool)((unsigned char)(byte_data & 0x08)) << " "
-				     << (bool)((unsigned char)(byte_data & 0x04)) << " "
-				     << (bool)((unsigned char)(byte_data & 0x02)) << " "
-				     << (bool)((unsigned char)(byte_data & 0x01)) << ") ";
-      if( fl_message > 1 && ibyte==3 ) std::cout << std::endl;
-
-      t_data[0+ibyte*8] = bit_flip( (bool)((unsigned char)(byte_data & 0x80)) ); // bit-flip correction
-      t_data[1+ibyte*8] = bit_flip( (bool)((unsigned char)(byte_data & 0x40)) ); // bit-flip correction
-      t_data[2+ibyte*8] = bit_flip( (bool)((unsigned char)(byte_data & 0x20)) ); // bit-flip correction
-      t_data[3+ibyte*8] = bit_flip( (bool)((unsigned char)(byte_data & 0x10)) ); // bit-flip correction
-      t_data[4+ibyte*8] = bit_flip( (bool)((unsigned char)(byte_data & 0x08)) ); // bit-flip correction
-      t_data[5+ibyte*8] = bit_flip( (bool)((unsigned char)(byte_data & 0x04)) ); // bit-flip correction
-      t_data[6+ibyte*8] = bit_flip( (bool)((unsigned char)(byte_data & 0x02)) ); // bit-flip correction
-      t_data[7+ibyte*8] = bit_flip( (bool)((unsigned char)(byte_data & 0x01)) ); // bit-flip correction
-      
-      t_chip = 0; // temporal setting for single chip test.
-      for( int i=0; i<8; i++ ){
-	if( t_data[i+ibyte*8] ){
-	  t_chip_v.push_back(t_chip);
-	  t_unit_v.push_back(t_unit);
-	  t_bit_v.push_back (i+ibyte*8);
-	  t_time_v.push_back(t_time);
-	}
-      }
-    }
-    
-    //if( idata%5000==0 ) std::cout << idata << std::endl;
-    //if( t_unit!=3 ) continue;
-    if( idata < 3) adjust += 4;
-  }
-  {
-    if( fl_message ) printf( "=>[ Event#=%d : #Data=%d+3 ]\n", t_event, ndata );
-    m_tree->Fill();
-    cnt_data += t_time_v.size();
-    nevt_success++;
-    init_tree();
-  }
-  
-  return 0;
-}
-
-int SampleMonitor::fill_data(const unsigned char* mydata, const int size)
-{
-  std::cout << "AAA size = " << size << std::endl;
-  decode_data(mydata, size);
-  m_tree->GetEntry(m_tree->GetEntries()-1);
-  std::cout << "TTTTTTT : " << m_tree->GetEntries() << std::endl; // tmppppp
-  std::cout << "EEEEEEE : " << t_event << std::endl; // tmpppppp
-  std::cout << t2_unit_v->size() << std::endl; // tmppppp
-  for( Int_t ivec=0; ivec<(int)t2_unit_v->size(); ivec++ ){
->>>>>>> 583a0a9e040e41d937a36b380fca4bbcbbd0a4e5
     const Int_t obs_ch = 123; // tmppppp
     if( obs_ch != m_tree->ch_map(m_tree->get_unit().at(ivec),m_tree->get_bit().at(ivec)) ) continue; // select specified channel
     m_hist->Fill( m_tree->get_time().at(ivec) );
