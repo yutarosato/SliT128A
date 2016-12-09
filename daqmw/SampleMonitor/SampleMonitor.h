@@ -22,6 +22,7 @@
 #include "TApplication.h"
 
 #include "SampleData.h"
+#include "../MTree/MTree.h"
 
 #include <vector>
 
@@ -62,16 +63,7 @@ private:
   unsigned int read_InPort();
   //int online_analyze();
 
-  int set_tree();
-  int init_tree();
-  int delete_tree();
-  int unit_id_mapping( int unit );
-  int bit_flip( bool bit );
-  int set_readbranch     ();
-  int set_readbranch_scan();
-  int decode_data(const unsigned char* mydata, int length);
   int fill_data(const unsigned char* mydata, const int size);
-  int ch_map( int unit, int bit );
   
   BufferStatus m_in_status;
   
@@ -88,38 +80,12 @@ private:
   unsigned int  m_event_byte_size;
   struct sampleData m_sampleData;
 
-  TTree* m_tree;
-  
+  MTree* m_tree;
+  int m_nevt_success;
+  int m_nevt_fail;
+
   bool m_debug;
-
-
-  const static int fl_message = 1; // 0(simple message), 1(normal message), 2(detailed message)
-  const static int n_chip =     1; // temporal setting
-  const static int n_unit =     4;
-  const static int n_bit  =    32;
-  const static int n_time =  8192; // pow(2,13)
-
-  int nevt_success;
-  int nevt_fail;
-  int fl_unit[n_unit];
-  
-  int cnt_data; // used for judgement of the endpoint of s-curve
-  
-  int t_event;
-  std::vector<int> t_chip_v; // for write
-  std::vector<int> t_unit_v;
-  std::vector<int> t_bit_v;
-  std::vector<int> t_time_v;
-
-  std::vector<int>* t2_chip_v; // for read
-  std::vector<int>* t2_unit_v;
-  std::vector<int>* t2_bit_v;
-  std::vector<int>* t2_time_v;
-
-  int t_chip;
-  int t_unit;
-  int t_time;
-  int t_data[n_bit];
+  const static int fl_message = 0; // 0(simple message), 1(normal message), 2(detailed message)
   
 };
 

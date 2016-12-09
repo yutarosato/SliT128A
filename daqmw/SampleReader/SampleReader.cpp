@@ -246,13 +246,12 @@ int SampleReader::read_data_from_detectors()
 
       if( (m_data[event_data_len] & 0x80) == 0x00 ){ // end of the event
 	//printf( "    fill_event_buf done %d bytes\n", event_data_len);
-	memcpy( &m_data[event_data_len], tmpbuf, DATA_STEP );
+	memcpy( tmpbuf, &m_data[event_data_len], 2*DATA_STEP );
 	return event_data_len;
       }else{ // continue the event
         event_data_len += 2*DATA_STEP;
       }
     }
-
 }
 
 int SampleReader::set_data(unsigned int data_byte_size)
