@@ -42,7 +42,7 @@ kill -9 $!
 
 # <Decode>
 cd decoder;
-./slit128cmd ../test.root ../test.dat 0.0 0.0 ${CH} ${CTRL_DAC} # && rm -f ../test.dat
+./slit128cmd_revise_chmap ../test.root ../test.dat 0.0 0.0 ${CH} ${CTRL_DAC} # && rm -f ../test.dat
 cd ../
 
 # <Plot>
