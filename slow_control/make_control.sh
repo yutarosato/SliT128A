@@ -27,9 +27,10 @@ echo ${CHIP_NO}     >> ${OUTFILE}
 echo "#"            >> ${OUTFILE}
 
 set CNT_CH = 0
+set CH_ID  = 127
 while( 1 )
   printf "%-5s" ${CNT_CH} >> ${OUTFILE}
-  if( ${CNT_CH} == ${CHANNEL_NO} ) then
+  if( ${CH_ID} == ${CHANNEL_NO} ) then
     echo ${COMMAND} >> ${OUTFILE}
   else
     echo ${COMMAND_OTHER} >> ${OUTFILE}
@@ -40,5 +41,6 @@ while( 1 )
     break;
   endif
   @ CNT_CH += 1
+  @ CH_ID  -= 1
 end
   
