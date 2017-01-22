@@ -38,11 +38,14 @@ SampleMonitor::SampleMonitor(RTC::Manager* manager)
       m_InPort("samplemonitor_in",   m_in_data),
       m_in_status(BUF_SUCCESS),
       m_canvas(0),
-      m_hist(0),
-      m_bin(0),
-      m_min(0),
-      m_max(0),
-      m_monitor_update_rate(30),
+      m_hist_1ch_1evt  (0),
+      m_hist_1ch_int   (0),
+      m_hist_allch_1evt(0),
+      m_hist_allch_int (0),
+      m_graph_nbit     (0),
+      m_graph_nhit     (0),
+      m_monitor_update_rate(100),
+      m_obs_ch(0),
       m_event_byte_size(0),
       m_nevt_success(0),
       m_nevt_fail(0),
@@ -117,14 +120,21 @@ int SampleMonitor::parse_params(::NVList* list)
     std::cerr << "sname: " << sname << "  ";
     std::cerr << "value: " << svalue << std::endl;
     
-    if (sname == "monitorUpdateRate") {
-      if (m_debug) {
+    if( sname == "monitorUpdateRate" ){
+      if( m_debug ){
 	std::cerr << "monitor update rate: " << svalue << std::endl;
       }
-      char *offset;
+      char* offset;
       m_monitor_update_rate = (int)strtol(svalue.c_str(), &offset, 10);
     }
     // If you have more param in config.xml, write here
+    if( sname == "sel1ch" ){
+      if( m_debug ){
+	std::cerr << "monitor update rate: " << svalue << std::endl;
+      }
+      char *offset;
+      m_obs_ch = (int)strtol(svalue.c_str(), &offset, 10);
+    }
   }
   
   return 0;
@@ -138,9 +148,34 @@ int SampleMonitor::daq_unconfigure()
     m_canvas = 0;
   }
   
-  if( m_hist ){
-    delete m_hist;
-    m_hist = 0;
+  if( m_hist_1ch_1evt ){
+    delete m_hist_1ch_1evt;
+    m_hist_1ch_1evt = 0;
+  }
+
+  if( m_hist_1ch_int ){
+    delete m_hist_1ch_int;
+    m_hist_1ch_int = 0;
+  }
+
+  if( m_hist_allch_1evt ){
+    delete m_hist_allch_1evt;
+    m_hist_allch_1evt = 0;
+  }
+
+  if( m_hist_allch_int ){
+    delete m_hist_allch_int;
+    m_hist_allch_int = 0;
+  }
+
+  if( m_graph_nbit ){
+    delete m_graph_nbit;
+    m_graph_nbit = 0;
+  }
+
+  if( m_graph_nhit ){
+    delete m_graph_nhit;
+    m_graph_nhit = 0;
   }
   
   if( m_tree ){
@@ -161,27 +196,78 @@ int SampleMonitor::daq_start()
     delete m_canvas;
     m_canvas = 0;
   }
-  m_canvas = new TCanvas("c1", "histos", 0, 0, 600, 400);
+  m_canvas = new TCanvas("c1", "histos", 0, 0, 1200, 1000);
+  m_canvas->Divide(2,3);
   
   ////////////////       HISTOS      ///////////////////
-  if( m_hist ){
-    delete m_hist;
-    m_hist = 0;
+  if( m_hist_1ch_1evt ){
+    delete m_hist_1ch_1evt;
+    m_hist_1ch_1evt = 0;
+  }
+
+  if( m_hist_1ch_int ){
+    delete m_hist_1ch_int;
+    m_hist_1ch_int = 0;
+  }
+
+  if( m_hist_allch_1evt ){
+    delete m_hist_allch_1evt;
+    m_hist_allch_1evt = 0;
+  }
+
+  if( m_hist_allch_int ){
+    delete m_hist_allch_int;
+    m_hist_allch_int = 0;
+  }
+
+  if( m_graph_nbit ){
+    delete m_graph_nbit;
+    m_graph_nbit = 0;
+  }
+
+  if( m_graph_nhit ){
+    delete m_graph_nhit;
+    m_graph_nhit = 0;
   }
   
-  int    m_hist_bin = 8192;
-  double m_hist_min = 0.0;
-  double m_hist_max = 8192;
+  int    m_hist_xbin = 8192;
+  double m_hist_xmin = 0.0;
+  double m_hist_xmax = 8192.0;
+
+  int    m_hist_ybin = n_unit*n_bit;
+  double m_hist_ymin = 0.0;
+  double m_hist_ymax = n_unit*n_bit;
   
   gStyle->SetStatW(0.4);
   gStyle->SetStatH(0.2);
   gStyle->SetOptStat("em");
   
-  m_hist = new TH1I("hist", "hist", m_hist_bin, m_hist_min, m_hist_max);
-  m_hist->GetXaxis()->SetNdivisions(5);
-  m_hist->GetYaxis()->SetNdivisions(4);
-  m_hist->GetXaxis()->SetLabelSize(0.07);
-  m_hist->GetYaxis()->SetLabelSize(0.06);
+  m_hist_1ch_1evt = new TH1I("hist_1ch_1evt", "hist_1ch_1evt", m_hist_xbin, m_hist_xmin, m_hist_xmax);
+  m_hist_1ch_1evt->GetXaxis()->SetNdivisions(5);
+  m_hist_1ch_1evt->GetYaxis()->SetNdivisions(4);
+  m_hist_1ch_1evt->GetXaxis()->SetLabelSize(0.07);
+  m_hist_1ch_1evt->GetYaxis()->SetLabelSize(0.06);
+
+  m_hist_1ch_int = new TH1I("hist_1ch_int", "hist_1ch_int", m_hist_xbin, m_hist_xmin, m_hist_xmax);
+  m_hist_1ch_int->GetXaxis()->SetNdivisions(5);
+  m_hist_1ch_int->GetYaxis()->SetNdivisions(4);
+  m_hist_1ch_int->GetXaxis()->SetLabelSize(0.07);
+  m_hist_1ch_int->GetYaxis()->SetLabelSize(0.06);
+
+  m_hist_allch_1evt = new TH2I("hist_allch_1evt", "hist_allch_1evt", m_hist_xbin, m_hist_xmin, m_hist_xmax, m_hist_ybin, m_hist_ymin, m_hist_ymax);
+  m_hist_allch_1evt->GetXaxis()->SetNdivisions(5);
+  m_hist_allch_1evt->GetYaxis()->SetNdivisions(4);
+  m_hist_allch_1evt->GetXaxis()->SetLabelSize(0.07);
+  m_hist_allch_1evt->GetYaxis()->SetLabelSize(0.06);
+
+  m_hist_allch_int = new TH2I("hist_allch_int", "hist_allch_int", m_hist_xbin, m_hist_xmin, m_hist_xmax, m_hist_ybin, m_hist_ymin, m_hist_ymax);
+  m_hist_allch_int->GetXaxis()->SetNdivisions(5);
+  m_hist_allch_int->GetYaxis()->SetNdivisions(4);
+  m_hist_allch_int->GetXaxis()->SetLabelSize(0.07);
+  m_hist_allch_int->GetYaxis()->SetLabelSize(0.06);
+
+  m_graph_nbit = new TGraph();
+  m_graph_nhit = new TGraph();
   
   m_tree->set_writebranch();
   m_tree->init_tree();
@@ -192,8 +278,13 @@ int SampleMonitor::daq_start()
 int SampleMonitor::daq_stop()
 {
   std::cerr << "*** SampleMonitor::stop" << std::endl;
-  
-  m_hist->Draw();
+
+  m_canvas->cd(1); m_hist_1ch_1evt  ->Draw();
+  m_canvas->cd(2); m_hist_1ch_int   ->Draw();
+  m_canvas->cd(3); m_hist_allch_1evt->Draw();
+  m_canvas->cd(4); m_hist_allch_int ->Draw();
+  m_canvas->cd(5); m_graph_nbit     ->Draw();
+  m_canvas->cd(6); m_graph_nhit     ->Draw();
   m_canvas->Update();
   
   reset_InPort();
@@ -228,16 +319,71 @@ int SampleMonitor::reset_InPort()
 
 int SampleMonitor::fill_data(const unsigned char* mydata, const int size)
 {
-  if( m_tree->decode_data(mydata, size) ){ // false
-    m_nevt_fail++;
-  }else{ // success
-    m_nevt_success++;
-  }
+  if( m_tree->decode_data(mydata, size) ) m_nevt_fail++;    // false
+  else                                    m_nevt_success++; // success
+
   for( Int_t ivec=0; ivec<m_tree->getnhit(); ivec++ ){
-    const Int_t obs_ch = 123; // tmppppp
-    if( obs_ch != m_tree->ch_map(m_tree->get_unit().at(ivec),m_tree->get_bit().at(ivec)) ) continue; // select specified channel
-    m_hist->Fill( m_tree->get_time().at(ivec) );
+    int obs_ch = m_tree->ch_map(m_tree->get_unit().at(ivec),m_tree->get_bit().at(ivec));
+    int time   = m_tree->get_time().at(ivec);
+
+    unsigned long sequence_num = get_sequence_num();
+    if( (sequence_num % m_monitor_update_rate) == 0 ){
+      m_hist_allch_1evt->Fill( obs_ch, time );
+    if( m_obs_ch == obs_ch ) m_hist_1ch_1evt->Fill( time );
+    }
+
+    m_hist_allch_int ->Fill( obs_ch, time );
+    if( m_obs_ch == obs_ch ) m_hist_1ch_int->Fill( time );
   }
+  
+  m_graph_nbit->SetPoint( m_graph_nbit->GetN(), sequence_num, m_hist_allch_int->Entries() );
+  m_graph_nhit->SetPoint( m_graph_nbit->GetN(), sequence_num, m_hist_allch_int->Entries() );
+
+  return 0;
+}
+
+int SampleMonitor::detect_signal( TH1I* hist ){
+  int  bin_start        = 0;
+  int  bin_end          = 0;
+  int  bin_start_before = 0;
+  bool fl_bin           = false;
+  bool fl_start         = true;
+  int  cnt_nsig         = 0;
+  int  cnt_nring        = 0;
+
+  for( int ibin=0; ibin<hist->GetNbinsX(); ibin++ ){
+    if( hist->GetBinContent(ibin+1) && !fl_bin ){ // edge(up)
+      bin_start = ibin;
+      fl_bin = true;
+    }else if( !hist->GetBinContent(ibin+1) && fl_bin){ // edge(down)
+      bin_end = ibin;
+      fl_bin = false;
+
+      int width = bin_end - bin_start;
+      int span  = bin_start - bin_start_before;
+
+      double entry_eff_before = ( bin_start>th_window          ? hist->Integral( bin_start-th_window, bin_start-1           )/((double)th_window) : hist->Integral(1,         bin_start-1 )/(double)(bin_start-1       ) );
+      double entry_eff_after  = ( bin_start<n_time-th_window+2 ? hist->Integral( bin_start,           bin_start+th_window-1 )/((double)th_window) : hist->Integral(bin_start, n_time      )/(double)(n_time-bin_start+1) );
+
+      if( entry_eff_before <= th_eff_before && entry_eff_after >= th_eff_after && ( span > th_span || bin_start_before == 0) && width > th_width ){ // true signal
+	//hist_width  ->Fill( width     );
+	//hist_1ch_int->Fill( bin_start );
+	//hist_wid_tim->Fill( bin_start, width );
+	if( !fl_start ){
+	  //hist_nring->Fill( cnt_nring );
+	  //hist_span ->Fill( span );
+	}
+	bin_start_before = bin_start;
+	cnt_nsig++;
+	cnt_nring = 0;
+	fl_start = false;
+      }else{ // ringing
+	cnt_nring++;
+      }
+    }
+  }
+  //hist_nring->Fill( cnt_nring );
+  //hist_nsig ->Fill( cnt_nsig );
 
   return 0;
 }
@@ -291,17 +437,21 @@ int SampleMonitor::daq_run()
 
     /////////////  Write component main logic here. /////////////
     memcpy(&m_recv_data[0], &m_in_data.data[HEADER_BYTE_SIZE], m_event_byte_size);
+    if( m_monitor_update_rate == 0 ) m_monitor_update_rate = 100;
 
     fill_data(&m_recv_data[0], m_event_byte_size);
 
-    if (m_monitor_update_rate == 0) {
-        m_monitor_update_rate = 100;
-    }
-
     unsigned long sequence_num = get_sequence_num();
     if ((sequence_num % m_monitor_update_rate) == 0) {
-        m_hist->Draw();
-        m_canvas->Update();
+      m_canvas->cd(1); m_hist_1ch_1evt  ->Draw();
+      m_canvas->cd(2); m_hist_1ch_int   ->Draw();
+      m_canvas->cd(3); m_hist_allch_1evt->Draw();
+      m_canvas->cd(4); m_hist_allch_int ->Draw();
+      m_canvas->cd(5); m_graph_nbit     ->Draw();
+      m_canvas->cd(6); m_graph_nhit     ->Draw();
+      m_canvas->Update();
+      m_hist_1ch_1evt  ->Reset(); // tmppppp
+      m_hist_allch_1evt->Reset(); // tmppppp
     }
     /////////////////////////////////////////////////////////////
     inc_sequence_num();                      // increase sequence num.

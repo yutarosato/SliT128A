@@ -16,6 +16,8 @@
 
 ////////// ROOT Include files //////////
 #include "TH1.h"
+#include "TH2.h"
+#include "TGraph.h"
 #include "TTree.h"
 #include "TCanvas.h"
 #include "TStyle.h"
@@ -62,18 +64,23 @@ private:
   unsigned int read_InPort();
   //int online_analyze();
 
-  int fill_data(const unsigned char* mydata, const int size);
+  int fill_data    (const unsigned char* mydata, const int size);
+  int detect_signal( TH1I* hist );
   
   BufferStatus m_in_status;
   
   ////////// ROOT Histogram //////////
   TCanvas *m_canvas;
-  TH1I    *m_hist;
-  int      m_bin;
-  double   m_min;
-  double   m_max;
+  TH1I    *m_hist_1ch_1evt;
+  TH1I    *m_hist_1ch_int;
+  TH2I    *m_hist_allch_1evt;
+  TH2I    *m_hist_allch_int;
+  TGraph  *m_graph_nbit;
+  TGraph  *m_graph_nhit;
+  
+  // external parameters
   int      m_monitor_update_rate;
-  //const static unsigned int DATA_BUF_SIZE = 1024*1024;
+  int      m_obs_ch;
   const static unsigned int DATA_BUF_SIZE = (8192*8+4)*4+1024; // 262160 + 1024; 1024 is spare
   unsigned char m_recv_data[DATA_BUF_SIZE];
   unsigned int  m_event_byte_size;
@@ -84,10 +91,17 @@ private:
   const static int n_bit  =    32;
   const static int n_time =  8192; // pow(2,13)
 
+// signal definition
+const static Int_t    th_span       =   450;
+const static Int_t    th_width      =     2;
+const static Int_t    th_window     =    20;
+const static Double_t th_eff_before =   2.0; // >=1.0 is no-cut
+const static Double_t th_eff_after  =  -1.0; // <=0.0 is no-cut
+  
   MTree* m_tree;
-  int m_nevt_success;
-  int m_nevt_fail;
-  bool m_debug;
+  int    m_nevt_success;
+  int    m_nevt_fail;
+  bool   m_debug;
   
   int t_event;
   std::vector<int> t_chip_v; // for write
