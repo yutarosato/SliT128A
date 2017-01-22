@@ -1,8 +1,0 @@
-Nov 25 12:45:00 INFO: manager: OpenRTM-aist-1.0.0
-Nov 25 12:45:00 INFO: manager: Copyright (C) 2003-2010
-Nov 25 12:45:00 INFO: manager:   Noriaki Ando
-Nov 25 12:45:00 INFO: manager:   Intelligent Systems Research Institute, AIST
-Nov 25 12:45:00 INFO: manager: Manager starting.
-Nov 25 12:45:00 INFO: manager: Starting local logging.
-Nov 25 12:45:00 INFO: NamingManager: NameServer connection failed: corba/localhost
-Nov 25 12:45:00 INFO: ManagerServant: Master manager not found
