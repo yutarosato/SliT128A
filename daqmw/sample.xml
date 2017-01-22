@@ -44,6 +44,7 @@
                     </outPorts>
                     <params>
                         <param pid="monitorUpdateRate">50</param>
+                        <param pid="sel1ch">123</param>
                     </params>
                 </component>
             </components>
