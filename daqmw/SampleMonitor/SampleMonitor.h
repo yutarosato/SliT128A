@@ -22,6 +22,7 @@
 #include "TCanvas.h"
 #include "TStyle.h"
 #include "TApplication.h"
+#include "TString.h"
 
 #include "../MTree/MTree.h"
 

@@ -17,7 +17,12 @@ MTree::~MTree(){
   t2_time_v = 0;
 }
 
+int MTree::ch_map( int unit, int bit ){
+  return n_bit*unit + bit;
+}
+
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/*
 int MTree::unit_id_mapping( int unit ){
   int flipped_unit = 0;
   if     ( unit==0 ) flipped_unit = 3;
@@ -27,16 +32,13 @@ int MTree::unit_id_mapping( int unit ){
   else std::cerr << "[ABORT] Wrong unit-ID : " << unit << std::endl;
   return flipped_unit;
 }
+*/
 
 int MTree::bit_flip( bool bit ){
   if( bit ) return false;
   else      return true;
 }
 
-
-int MTree::ch_map( int unit, int bit ){
-  return n_bit*unit + bit;
-}
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -97,7 +99,7 @@ int MTree::decode_data(const unsigned char* mydata, int length)
     int tmp_time = ntohs(*time_info);
     int tmp_data[n_bit];
 
-    tmp_unit = unit_id_mapping( tmp_unit ); // unit-ID correction
+    //tmp_unit = unit_id_mapping( tmp_unit ); // unit-ID correction // unit-ID correction // removed for ch-map correction@20161004
 
     for( int ibyte=0; ibyte<4; ibyte++ ){
       unsigned char byte_data = mydata[8*idata+adjust+8+ibyte];
@@ -113,21 +115,21 @@ int MTree::decode_data(const unsigned char* mydata, int length)
 				     << (bool)((unsigned char)(byte_data & 0x01)) << ") ";
       if( fl_message > 1 && ibyte==3 ) std::cout << std::endl;
 
-      tmp_data[0+ibyte*8] = bit_flip( (bool)((unsigned char)(byte_data & 0x80)) ); // bit-flip correction
-      tmp_data[1+ibyte*8] = bit_flip( (bool)((unsigned char)(byte_data & 0x40)) ); // bit-flip correction
-      tmp_data[2+ibyte*8] = bit_flip( (bool)((unsigned char)(byte_data & 0x20)) ); // bit-flip correction
-      tmp_data[3+ibyte*8] = bit_flip( (bool)((unsigned char)(byte_data & 0x10)) ); // bit-flip correction
-      tmp_data[4+ibyte*8] = bit_flip( (bool)((unsigned char)(byte_data & 0x08)) ); // bit-flip correction
-      tmp_data[5+ibyte*8] = bit_flip( (bool)((unsigned char)(byte_data & 0x04)) ); // bit-flip correction
-      tmp_data[6+ibyte*8] = bit_flip( (bool)((unsigned char)(byte_data & 0x02)) ); // bit-flip correction
-      tmp_data[7+ibyte*8] = bit_flip( (bool)((unsigned char)(byte_data & 0x01)) ); // bit-flip correction
+      tmp_data[7+(3-ibyte)*8] = bit_flip( (bool)((unsigned char)(byte_data & 0x80)) ); // bit-flip correction // modified for ch-map correction @20161004
+      tmp_data[6+(3-ibyte)*8] = bit_flip( (bool)((unsigned char)(byte_data & 0x40)) ); // bit-flip correction // modified for ch-map correction @20161004
+      tmp_data[5+(3-ibyte)*8] = bit_flip( (bool)((unsigned char)(byte_data & 0x20)) ); // bit-flip correction // modified for ch-map correction @20161004
+      tmp_data[4+(3-ibyte)*8] = bit_flip( (bool)((unsigned char)(byte_data & 0x10)) ); // bit-flip correction // modified for ch-map correction @20161004
+      tmp_data[3+(3-ibyte)*8] = bit_flip( (bool)((unsigned char)(byte_data & 0x08)) ); // bit-flip correction // modified for ch-map correction @20161004
+      tmp_data[2+(3-ibyte)*8] = bit_flip( (bool)((unsigned char)(byte_data & 0x04)) ); // bit-flip correction // modified for ch-map correction @20161004
+      tmp_data[1+(3-ibyte)*8] = bit_flip( (bool)((unsigned char)(byte_data & 0x02)) ); // bit-flip correction // modified for ch-map correction @20161004
+      tmp_data[0+(3-ibyte)*8] = bit_flip( (bool)((unsigned char)(byte_data & 0x01)) ); // bit-flip correction // modified for ch-map correction @20161004
       
       tmp_chip = 0; // temporal setting for single chip test.
       for( int i=0; i<8; i++ ){
-	if( tmp_data[i+ibyte*8] ){
+	if( tmp_data[i+(3-ibyte)*8] ){ // modified for ch-map correction @20161004
 	  t_chip_v.push_back(tmp_chip);
 	  t_unit_v.push_back(tmp_unit);
-	  t_bit_v.push_back (i+ibyte*8);
+	  t_bit_v.push_back (i+(3-ibyte)*8); // modified for ch-map correction @20161004
 	  t_time_v.push_back(tmp_time);
 	}
       }

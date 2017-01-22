@@ -37,9 +37,9 @@ class MTree{
   std::vector<int>* t2_time_v;
 
  public:
-  int unit_id_mapping( int unit );
+  //int unit_id_mapping( int unit );
   int bit_flip( bool bit );
-  int ch_map( int unit, int bit );
+  int ch_map  ( int unit, int bit );
 
  public:
   int set_readbranch();

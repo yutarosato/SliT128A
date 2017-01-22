@@ -32,7 +32,7 @@ Int_t main( Int_t argc, Char_t** argv ){
   can->Divide(1,2);
   can->Draw();
   //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  Int_t cnt_show = 1;
+  Int_t cnt_show = 0;
   for( Int_t ievt=0; ievt<chain->GetEntries(); ievt++ ){
     chain->GetEntry(ievt);
     for( Int_t ivec=0; ivec<t_unit_v->size(); ivec++ ){
@@ -49,7 +49,6 @@ Int_t main( Int_t argc, Char_t** argv ){
       hist_int->Draw("COLZ");
       can->Update();
       can->WaitPrimitive();
-      cnt_show++;
       hist->Reset();
     }
     cnt_show++;

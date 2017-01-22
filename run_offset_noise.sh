@@ -9,8 +9,6 @@ endif
 set CH       = $1
 set CTRL_DAC = $2
 
-(cd decoder; make;)
-
 set TMP = `echo "obase=2; ibase=10; ${CTRL_DAC}" | bc | sed 's|-||'`
       if( ${CTRL_DAC} < 1 ) then
         set CTRL_DAC_BIT = `printf "L%05d\n" ${TMP} | sed 's|0|L|g' | sed 's|1|H|g'`

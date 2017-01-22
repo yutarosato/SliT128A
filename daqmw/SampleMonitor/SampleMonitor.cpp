@@ -238,36 +238,23 @@ int SampleMonitor::daq_start()
   double m_hist_ymin = 0.0;
   double m_hist_ymax = n_unit*n_bit;
   
-  gStyle->SetStatW(0.4);
-  gStyle->SetStatH(0.2);
-  gStyle->SetOptStat("em");
-  
-  m_hist_1ch_1evt = new TH1I("hist_1ch_1evt", "hist_1ch_1evt", m_hist_xbin, m_hist_xmin, m_hist_xmax);
-  m_hist_1ch_1evt->GetXaxis()->SetNdivisions(5);
-  m_hist_1ch_1evt->GetYaxis()->SetNdivisions(4);
-  m_hist_1ch_1evt->GetXaxis()->SetLabelSize(0.07);
-  m_hist_1ch_1evt->GetYaxis()->SetLabelSize(0.06);
-
-  m_hist_1ch_int = new TH1I("hist_1ch_int", "hist_1ch_int", m_hist_xbin, m_hist_xmin, m_hist_xmax);
-  m_hist_1ch_int->GetXaxis()->SetNdivisions(5);
-  m_hist_1ch_int->GetYaxis()->SetNdivisions(4);
-  m_hist_1ch_int->GetXaxis()->SetLabelSize(0.07);
-  m_hist_1ch_int->GetYaxis()->SetLabelSize(0.06);
-
-  m_hist_allch_1evt = new TH2I("hist_allch_1evt", "hist_allch_1evt", m_hist_xbin, m_hist_xmin, m_hist_xmax, m_hist_ybin, m_hist_ymin, m_hist_ymax);
-  m_hist_allch_1evt->GetXaxis()->SetNdivisions(5);
-  m_hist_allch_1evt->GetYaxis()->SetNdivisions(4);
-  m_hist_allch_1evt->GetXaxis()->SetLabelSize(0.07);
-  m_hist_allch_1evt->GetYaxis()->SetLabelSize(0.06);
-
-  m_hist_allch_int = new TH2I("hist_allch_int", "hist_allch_int", m_hist_xbin, m_hist_xmin, m_hist_xmax, m_hist_ybin, m_hist_ymin, m_hist_ymax);
-  m_hist_allch_int->GetXaxis()->SetNdivisions(5);
-  m_hist_allch_int->GetYaxis()->SetNdivisions(4);
-  m_hist_allch_int->GetXaxis()->SetLabelSize(0.07);
-  m_hist_allch_int->GetYaxis()->SetLabelSize(0.06);
+  m_hist_1ch_1evt   = new TH1I( "hist_1ch_1evt",   "hist_1ch_1evt",   m_hist_xbin, m_hist_xmin, m_hist_xmax );
+  m_hist_1ch_int    = new TH1I( "hist_1ch_int",    "hist_1ch_int",    m_hist_xbin, m_hist_xmin, m_hist_xmax );
+  m_hist_allch_1evt = new TH2I( "hist_allch_1evt", "hist_allch_1evt", m_hist_xbin, m_hist_xmin, m_hist_xmax, m_hist_ybin, m_hist_ymin, m_hist_ymax );
+  m_hist_allch_int  = new TH2I( "hist_allch_int",  "hist_allch_int",  m_hist_xbin, m_hist_xmin, m_hist_xmax, m_hist_ybin, m_hist_ymin, m_hist_ymax );
 
   m_graph_nbit = new TGraph();
   m_graph_nhit = new TGraph();
+  m_graph_nbit->SetTitle( "N_{bit};events;Bits/events" );
+  m_graph_nhit->SetTitle( "N_{hit};events;Hits/events" );
+  m_graph_nbit->SetMarkerColor(2);
+  m_graph_nhit->SetMarkerColor(2);
+  m_graph_nbit->SetMinimum(0.0);
+  m_graph_nhit->SetMinimum(0.0);
+  m_graph_nbit->SetMarkerStyle(20);
+  m_graph_nhit->SetMarkerStyle(20);
+  m_graph_nbit->SetMarkerSize(0.2);
+  m_graph_nhit->SetMarkerSize(0.2);
   
   m_tree->set_writebranch();
   m_tree->init_tree();
@@ -281,10 +268,10 @@ int SampleMonitor::daq_stop()
 
   m_canvas->cd(1); m_hist_1ch_1evt  ->Draw();
   m_canvas->cd(2); m_hist_1ch_int   ->Draw();
-  m_canvas->cd(3); m_hist_allch_1evt->Draw();
-  m_canvas->cd(4); m_hist_allch_int ->Draw();
-  m_canvas->cd(5); m_graph_nbit     ->Draw();
-  m_canvas->cd(6); m_graph_nhit     ->Draw();
+  m_canvas->cd(3); m_hist_allch_1evt->Draw("COLZ");
+  m_canvas->cd(4); m_hist_allch_int ->Draw("COLZ");
+  m_canvas->cd(5); m_graph_nbit     ->Draw("AP");
+  m_canvas->cd(6); m_graph_nhit     ->Draw("AP");
   m_canvas->Update();
   
   reset_InPort();
@@ -322,22 +309,23 @@ int SampleMonitor::fill_data(const unsigned char* mydata, const int size)
   if( m_tree->decode_data(mydata, size) ) m_nevt_fail++;    // false
   else                                    m_nevt_success++; // success
 
+  unsigned long sequence_num = get_sequence_num();
+  int prev_nbit = m_hist_allch_int->GetEntries();
   for( Int_t ivec=0; ivec<m_tree->getnhit(); ivec++ ){
     int obs_ch = m_tree->ch_map(m_tree->get_unit().at(ivec),m_tree->get_bit().at(ivec));
     int time   = m_tree->get_time().at(ivec);
 
-    unsigned long sequence_num = get_sequence_num();
     if( (sequence_num % m_monitor_update_rate) == 0 ){
-      m_hist_allch_1evt->Fill( obs_ch, time );
-    if( m_obs_ch == obs_ch ) m_hist_1ch_1evt->Fill( time );
+      m_hist_allch_1evt->Fill( time, obs_ch );
+      if( m_obs_ch==obs_ch ) m_hist_1ch_1evt->Fill( time );
     }
 
-    m_hist_allch_int ->Fill( obs_ch, time );
-    if( m_obs_ch == obs_ch ) m_hist_1ch_int->Fill( time );
+    m_hist_allch_int->Fill( time, obs_ch );
+    if( m_obs_ch==obs_ch ) m_hist_1ch_int->Fill( time );
   }
   
-  m_graph_nbit->SetPoint( m_graph_nbit->GetN(), sequence_num, m_hist_allch_int->Entries() );
-  m_graph_nhit->SetPoint( m_graph_nbit->GetN(), sequence_num, m_hist_allch_int->Entries() );
+  m_graph_nbit->SetPoint( m_graph_nbit->GetN(), sequence_num, m_hist_allch_int->GetEntries()-prev_nbit );
+  m_graph_nhit->SetPoint( m_graph_nhit->GetN(), sequence_num, m_hist_allch_int->GetEntries()-prev_nbit );
 
   return 0;
 }
@@ -438,20 +426,28 @@ int SampleMonitor::daq_run()
     /////////////  Write component main logic here. /////////////
     memcpy(&m_recv_data[0], &m_in_data.data[HEADER_BYTE_SIZE], m_event_byte_size);
     if( m_monitor_update_rate == 0 ) m_monitor_update_rate = 100;
+    unsigned long sequence_num = get_sequence_num();
+    if( (sequence_num % m_monitor_update_rate)==0 ){
+      m_hist_1ch_1evt  ->Reset();
+      m_hist_allch_1evt->Reset();
+    }
+
 
     fill_data(&m_recv_data[0], m_event_byte_size);
+    
+    if( (sequence_num % m_monitor_update_rate)==0 ){
+      m_hist_1ch_1evt  ->SetTitle( Form("Ch.%d, evtNo.%d;Time [bit];Hits",            m_obs_ch,  (int)sequence_num) );
+      m_hist_1ch_int   ->SetTitle( Form("Ch.%d, Integral of %d events;Time [bit];Hits",m_obs_ch, (int)sequence_num) );
+      m_hist_allch_1evt->SetTitle( Form("evtNo.%d;Time [bit];Hits",                              (int)sequence_num) );
+      m_hist_allch_int ->SetTitle( Form("Integral of %d events;Time [bit];Hits",                 (int)sequence_num) );
 
-    unsigned long sequence_num = get_sequence_num();
-    if ((sequence_num % m_monitor_update_rate) == 0) {
       m_canvas->cd(1); m_hist_1ch_1evt  ->Draw();
       m_canvas->cd(2); m_hist_1ch_int   ->Draw();
-      m_canvas->cd(3); m_hist_allch_1evt->Draw();
-      m_canvas->cd(4); m_hist_allch_int ->Draw();
-      m_canvas->cd(5); m_graph_nbit     ->Draw();
-      m_canvas->cd(6); m_graph_nhit     ->Draw();
+      m_canvas->cd(3); m_hist_allch_1evt->Draw("COLZ");
+      m_canvas->cd(4); m_hist_allch_int ->Draw("COLZ");
+      m_canvas->cd(5); m_graph_nbit     ->Draw("AP");
+      m_canvas->cd(6); m_graph_nhit     ->Draw("AP");
       m_canvas->Update();
-      m_hist_1ch_1evt  ->Reset(); // tmppppp
-      m_hist_allch_1evt->Reset(); // tmppppp
     }
     /////////////////////////////////////////////////////////////
     inc_sequence_num();                      // increase sequence num.
