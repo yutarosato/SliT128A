@@ -46,8 +46,7 @@ Merger::Merger(RTC::Manager* manager)
       m_nextread_ID(0),
       m_recv_byte_size(0),
       m_stop_flag(0),
-      m_debug(false),
-      m_separate_flag(false)
+      m_debug(false)
 {
     // Registration: InPort/OutPort/Service
     // Set InPort buffers
@@ -128,7 +127,7 @@ int Merger::parse_params(::NVList* list){
 
   std::cerr << "param list length:" << (*list).length() << std::endl;
   
-  bool separate_flagSpecified = false;
+  //bool separate_flagSpecified = false;
   
   int len = (*list).length();
   for( int i = 0; i < len; i+=2 ){
@@ -137,18 +136,20 @@ int Merger::parse_params(::NVList* list){
     
     std::cerr << "sname: " << sname << "  ";
     std::cerr << "value: " << svalue << std::endl;
-    
+    /*
     if( sname == "separate_flag" ){
       separate_flagSpecified = true;
       char *offset;
       m_separate_flag = (bool)strtol(svalue.c_str(), &offset, 10);
     }
+    */
   }
-  
+  /*  
   if( !separate_flagSpecified ){
     std::cerr << "### ERROR:separate_flagnot specified\n";
     fatal_error_report(USER_DEFINED_ERROR1, "NO SEPARATE_FLAG");
   }
+  */
   
   return 0;
 }
@@ -269,78 +270,16 @@ unsigned int Merger::read_InPort(int PortNum){
  */
 int Merger::set_data_full(unsigned int data_byte_size)
 {
-    m_out_data.data.length(HEADER_BYTE_SIZE + data_byte_size + FOOTER_BYTE_SIZE);
-    memcpy(&(m_out_data.data[0]), &(m_in_data[m_in_get]->data[0]), HEADER_BYTE_SIZE + data_byte_size + FOOTER_BYTE_SIZE);
-
     //set footer
     unsigned char footer[8];
     set_footer(&footer[0]);
-    
-    memcpy(&(m_out_data.data[data_byte_size + FOOTER_BYTE_SIZE]), &footer[0], FOOTER_BYTE_SIZE);
 
+    m_out_data.data.length(HEADER_BYTE_SIZE + data_byte_size + FOOTER_BYTE_SIZE);
+    memcpy( &(m_out_data.data[0]                                ), &(m_in_data[m_in_get]->data[0]), HEADER_BYTE_SIZE + data_byte_size + FOOTER_BYTE_SIZE );
+    memcpy( &(m_out_data.data[data_byte_size + FOOTER_BYTE_SIZE]), &footer[0],                      FOOTER_BYTE_SIZE                                     );
 
     return 0;
 }
-
-
-/**
- * @brief 次のコンポーネントに送るデータをsetする。
- * @param [in]  send_data m_out_data.dataに格納したデータのバイト数（ヘッダは含めない)
- * @param header[8] ヘッダのバッファ
- * @param footer[8] フッターのバッファ
- *
- * m_in_dataに格納されているデータのうち、対象のイベントのみを抜き出し、m_out_data.dataにセットしている。 <br>
- * 
- */
-unsigned int Merger::set_data_separate(unsigned int send_data)
-{
-    unsigned int next_send_data = send_data;
-
-    //get port
-    union u_port_f{
-        unsigned char port_char[2];
-        unsigned short port_short;
-    }u_port;
-
-    u_port.port_char[0] = m_in_data[m_in_get]->data[HEADER_BYTE_SIZE + send_data];
-    u_port.port_char[1] = m_in_data[m_in_get]->data[HEADER_BYTE_SIZE + send_data + 1];
-    //unsigned short port = ntohs(u_port.port_short);
-
-    //get event size
-    union u_eventsize_f{
-        unsigned char eventsize_char[4];
-        unsigned int eventsize_int;
-    }u_eventsize;
-
-    u_eventsize.eventsize_char[0] = m_in_data[m_in_get]->data[HEADER_BYTE_SIZE + send_data + PORT_BUFFER_SIZE];
-    u_eventsize.eventsize_char[1] = m_in_data[m_in_get]->data[HEADER_BYTE_SIZE + send_data + PORT_BUFFER_SIZE + 1];
-    u_eventsize.eventsize_char[2] = m_in_data[m_in_get]->data[HEADER_BYTE_SIZE + send_data + PORT_BUFFER_SIZE + 2];
-    u_eventsize.eventsize_char[3] = m_in_data[m_in_get]->data[HEADER_BYTE_SIZE + send_data + PORT_BUFFER_SIZE + 3];
-    unsigned int event_size = ntohl(u_eventsize.eventsize_int);
-
-    //set length
-    m_out_data.data.length(HEADER_BYTE_SIZE + event_size + FOOTER_BYTE_SIZE);
-
-    //set header    
-    unsigned char header[8];
-    set_header(&header[0], event_size);
-    memcpy(&header[2], &u_port.port_short, PORT_BUFFER_SIZE);
-    memcpy(&(m_out_data.data[0]), &header[0], HEADER_BYTE_SIZE);
-
-    //set data
-    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE]), 
-            &(m_in_data[m_in_get]->data[HEADER_BYTE_SIZE + send_data + PORT_BUFFER_SIZE + EVENTSIZE_BUFFER_SIZE]), 
-            event_size);
-    next_send_data += PORT_BUFFER_SIZE + EVENTSIZE_BUFFER_SIZE + event_size;
-
-    //set footer
-    unsigned char footer[8];
-    set_footer(&footer[0]);
-    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE + event_size]), &footer[0], FOOTER_BYTE_SIZE);
-
-    return event_size;
-}
-
 
 
 /**
@@ -383,50 +322,22 @@ int Merger::write_OutPort()
  *
  * timeout することなく、データを送ることができるまでfor文でまわり続けている。
  */
-void Merger::data_send(unsigned int event_byte_size){
+void Merger::data_send( unsigned int event_byte_size ){
   
-  //case of separete
-  if( m_separate_flag == true ){
-    unsigned int send_data = 0;
-    unsigned int one_send_data_size = 0;
-    
-    for(;;){
-      if( send_data >= event_byte_size ) break; //zenbu yonndara owari
-      one_send_data_size = set_data_separate(send_data); //set data
-      
-      //send data
-      for(;;){
-	if( write_OutPort() < 0) continue; // Time Out
-	else{
-	  m_out_status = BUF_SUCCESS;
-	  inc_sequence_num();                     // increase sequence num.
-	  inc_total_data_size(one_send_data_size);  // increase total data byte size
-	  break;
-	}
-      }
-      
-      send_data += one_send_data_size + PORT_BUFFER_SIZE + EVENTSIZE_BUFFER_SIZE;
-    }
-  }else{ //case of full 
-    //set data
-    set_data_full(event_byte_size);
-    
-    //send data
-    for(;;){
-      if( write_OutPort() < 0 ) continue; //Time Out
-      else{
-	m_out_status = BUF_SUCCESS;
-	inc_sequence_num();                     // increase sequence num.
-	inc_total_data_size(event_byte_size);  // increase total data byte size
-	break;
-      }
+  set_data_full(event_byte_size); //set data
+  
+  for(;;){ // send data
+    if( write_OutPort() < 0 ) continue; // Time Out
+    else{
+      m_out_status = BUF_SUCCESS;
+      inc_sequence_num();                    // increase sequence num.
+      inc_total_data_size(event_byte_size);  // increase total data byte size
+      break;
     }
   }
   
   return;
 }
-
-
 
 
 /**
@@ -453,8 +364,7 @@ void Merger::data_send(unsigned int event_byte_size){
  *        if (check_trans_lock()) {     // Check if stop command has come. \n
  * は、ストップコマンドが実行された時に、リングバッファに格納されたデータを読み込むこために必要な処理
  */
-int Merger::daq_run()
-{
+int Merger::daq_run(){
   if( m_debug ) std::cerr << "*** Merger::run" << std::endl;
   
   unsigned int event_byte_size = 0;
@@ -462,10 +372,10 @@ int Merger::daq_run()
   /////////// InPort //////////
   if( m_out_status != BUF_TIMEOUT ){
     for( int PortNum = m_nextread_ID+1; PortNum<InPortNum; PortNum++ ){ 
-      m_recv_byte_size = read_InPort(PortNum);
+      m_recv_byte_size = read_InPort( PortNum );
       
       if( m_recv_byte_size != 0 ){ // no Timeout
-	event_byte_size = get_event_size(m_recv_byte_size);
+	event_byte_size = get_event_size( m_recv_byte_size );
         
 	if( event_byte_size > RECV_BUFFER_SIZE ) fatal_error_report(USER_DEFINED_ERROR1, "Length Too Large");
 	
@@ -494,7 +404,7 @@ int Merger::daq_run()
   for( int PortNum = 0; PortNum < InPortNum; PortNum++ ){
     if( m_in_status[PortNum] != BUF_SUCCESS ) continue;
 
-    data_send(event_byte_size);
+    data_send( event_byte_size );
     m_nextread_ID = m_in_get;
     m_in_get = -1;
     

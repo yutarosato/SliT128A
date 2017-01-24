@@ -79,9 +79,6 @@ private:
     int m_stop_flag;                                        //!< stopが実行されたあとに、daq_runが実行された回数
     bool m_debug;                                           //!<  0--> 通常モード　1-->デバックモード。　コンフィグレーションファイルから設定
     
-    
-    bool            m_separate_flag;                        //!< 0-->受取ったデータをそのまま送る。1-->イベントごとに送る。コンフィグレーションファイルから設定 
-
     struct          timeval m_starttime;                    //!< start time  (use for debug)
     struct          timeval m_endtime;                      //!< end time (use for debug)
 

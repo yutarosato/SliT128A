@@ -264,10 +264,9 @@ int SampleReader::set_data(unsigned int data_byte_size)
 
     ///set OutPort buffer length
     m_out_data.data.length(data_byte_size + HEADER_BYTE_SIZE + FOOTER_BYTE_SIZE);
-    memcpy(&(m_out_data.data[0]), &header[0], HEADER_BYTE_SIZE);
-    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE]), &m_data[0], data_byte_size);
-    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE + data_byte_size]), &footer[0],
-           FOOTER_BYTE_SIZE);
+    memcpy( &(m_out_data.data[0]                                ), &header[0], HEADER_BYTE_SIZE );
+    memcpy( &(m_out_data.data[HEADER_BYTE_SIZE]                 ), &m_data[0], data_byte_size   );
+    memcpy( &(m_out_data.data[HEADER_BYTE_SIZE + data_byte_size]), &footer[0], FOOTER_BYTE_SIZE );
 
     return 0;
 }
@@ -278,19 +277,14 @@ int SampleReader::write_OutPort()
     bool ret = m_OutPort.write();
 
     //////////////////// check write status /////////////////////
-    if (ret == false) {  // TIMEOUT or FATAL
+    if( ret == false ){  // TIMEOUT or FATAL
         m_out_status  = check_outPort_status(m_OutPort);
-        if (m_out_status == BUF_FATAL) {   // Fatal error
-            fatal_error_report(OUTPORT_ERROR);
-        }
-        if (m_out_status == BUF_TIMEOUT) { // Timeout
-            return -1;
-        }
+        if     ( m_out_status == BUF_FATAL   ) fatal_error_report(OUTPORT_ERROR); // Fatal error
+        else if( m_out_status == BUF_TIMEOUT ) return -1; // Timeout
+    }else{ // successfully done
+      m_out_status = BUF_SUCCESS;
     }
-    else {
-        m_out_status = BUF_SUCCESS; // successfully done
-    }
-
+    
     return 0;
 }
 
