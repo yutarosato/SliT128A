@@ -72,6 +72,7 @@ int MTree::init_tree(){
   t_unit_v.clear();
   t_bit_v.clear();
   t_time_v.clear();
+  m_tree->Reset();
   
   return 0;
 }
@@ -144,6 +145,7 @@ int MTree::decode_data(const unsigned char* mydata, int length)
     return 1; // fail
   }else{
     m_tree->Fill();
+    m_tree->GetEntry(m_tree->GetEntries()-1);
     return 0; // success
   }
 }

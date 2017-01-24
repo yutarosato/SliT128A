@@ -38,12 +38,22 @@ SampleMonitor::SampleMonitor(RTC::Manager* manager)
       m_InPort("samplemonitor_in",   m_in_data),
       m_in_status(BUF_SUCCESS),
       m_canvas(0),
-      m_hist_1ch_1evt  (0),
-      m_hist_1ch_int   (0),
-      m_hist_allch_1evt(0),
-      m_hist_allch_int (0),
+      m_hist_bit_1ch_1evt  (0),
+      m_hist_hit_1ch_1evt  (0),
+      m_hist_bit_1ch_evts  (0),
+      m_hist_hit_1ch_evts  (0),
+      m_hist_bit_1ch_int   (0),
+      m_hist_hit_1ch_int   (0),
+      m_hist_bit_allch_1evt(0),
+      m_hist_hit_allch_1evt(0),
+      m_hist_bit_allch_evts(0),
+      m_hist_hit_allch_evts(0),
+      m_hist_bit_allch_int (0),
+      m_hist_hit_allch_int (0),
+      m_hist_width         (0),
       m_graph_nbit     (0),
       m_graph_nhit     (0),
+      m_graph_width    (0),
       m_monitor_update_rate(100),
       m_obs_ch(0),
       m_event_byte_size(0),
@@ -60,8 +70,13 @@ SampleMonitor::SampleMonitor(RTC::Manager* manager)
   init_command_port();
   init_state_table();
   set_comp_name("SAMPLEMONITOR");
-
-  m_tree = new MTree();
+  TStyle* sty = new TStyle();
+  sty->SetMarkerStyle(20);
+  sty->SetMarkerSize(0.5);
+  sty->SetMarkerColor(2);
+  sty->SetLineColor(2);
+  sty->SetPadBottomMargin(0.13);
+  sty->SetPalette(1,0);
 }
 
 SampleMonitor::~SampleMonitor()
@@ -143,45 +158,8 @@ int SampleMonitor::parse_params(::NVList* list)
 int SampleMonitor::daq_unconfigure()
 {
   std::cerr << "*** SampleMonitor::unconfigure" << std::endl;
-  if( m_canvas ){
-    delete m_canvas;
-    m_canvas = 0;
-  }
-  
-  if( m_hist_1ch_1evt ){
-    delete m_hist_1ch_1evt;
-    m_hist_1ch_1evt = 0;
-  }
+  delete_obj();
 
-  if( m_hist_1ch_int ){
-    delete m_hist_1ch_int;
-    m_hist_1ch_int = 0;
-  }
-
-  if( m_hist_allch_1evt ){
-    delete m_hist_allch_1evt;
-    m_hist_allch_1evt = 0;
-  }
-
-  if( m_hist_allch_int ){
-    delete m_hist_allch_int;
-    m_hist_allch_int = 0;
-  }
-
-  if( m_graph_nbit ){
-    delete m_graph_nbit;
-    m_graph_nbit = 0;
-  }
-
-  if( m_graph_nhit ){
-    delete m_graph_nhit;
-    m_graph_nhit = 0;
-  }
-  
-  if( m_tree ){
-    delete m_tree;
-    m_tree = 0;
-  }
   return 0;
 }
 
@@ -190,45 +168,13 @@ int SampleMonitor::daq_start()
   std::cerr << "*** SampleMonitor::start" << std::endl;
   
   m_in_status  = BUF_SUCCESS;
-  
-  //////////////// CANVAS FOR HISTOS ///////////////////
-  if( m_canvas ){
-    delete m_canvas;
-    m_canvas = 0;
-  }
-  m_canvas = new TCanvas("c1", "histos", 0, 0, 1200, 1000);
-  m_canvas->Divide(2,3);
-  
-  ////////////////       HISTOS      ///////////////////
-  if( m_hist_1ch_1evt ){
-    delete m_hist_1ch_1evt;
-    m_hist_1ch_1evt = 0;
-  }
 
-  if( m_hist_1ch_int ){
-    delete m_hist_1ch_int;
-    m_hist_1ch_int = 0;
-  }
+  delete_obj();
+  if( m_tree ){ delete m_tree; m_tree = 0; }
 
-  if( m_hist_allch_1evt ){
-    delete m_hist_allch_1evt;
-    m_hist_allch_1evt = 0;
-  }
-
-  if( m_hist_allch_int ){
-    delete m_hist_allch_int;
-    m_hist_allch_int = 0;
-  }
-
-  if( m_graph_nbit ){
-    delete m_graph_nbit;
-    m_graph_nbit = 0;
-  }
-
-  if( m_graph_nhit ){
-    delete m_graph_nhit;
-    m_graph_nhit = 0;
-  }
+  m_tree   = new MTree();
+  m_canvas = new TCanvas("c1", "histos", 0, 0, 1800, 800);
+  m_canvas->Divide(4,3);
   
   int    m_hist_xbin = 8192;
   double m_hist_xmin = 0.0;
@@ -238,23 +184,42 @@ int SampleMonitor::daq_start()
   double m_hist_ymin = 0.0;
   double m_hist_ymax = n_unit*n_bit;
   
-  m_hist_1ch_1evt   = new TH1I( "hist_1ch_1evt",   "hist_1ch_1evt",   m_hist_xbin, m_hist_xmin, m_hist_xmax );
-  m_hist_1ch_int    = new TH1I( "hist_1ch_int",    "hist_1ch_int",    m_hist_xbin, m_hist_xmin, m_hist_xmax );
-  m_hist_allch_1evt = new TH2I( "hist_allch_1evt", "hist_allch_1evt", m_hist_xbin, m_hist_xmin, m_hist_xmax, m_hist_ybin, m_hist_ymin, m_hist_ymax );
-  m_hist_allch_int  = new TH2I( "hist_allch_int",  "hist_allch_int",  m_hist_xbin, m_hist_xmin, m_hist_xmax, m_hist_ybin, m_hist_ymin, m_hist_ymax );
+  m_hist_bit_1ch_1evt   = new TH1I( "hist_bit_1ch_1evt",   "hist_bit_1ch_1evt",   m_hist_xbin, m_hist_xmin, m_hist_xmax );
+  m_hist_hit_1ch_1evt   = new TH1I( "hist_hit_1ch_1evt",   "hist_hit_1ch_1evt",   m_hist_xbin, m_hist_xmin, m_hist_xmax );
+  m_hist_bit_1ch_evts   = new TH1I( "hist_bit_1ch_evts",   "hist_bit_1ch_evts",   m_hist_xbin, m_hist_xmin, m_hist_xmax );
+  m_hist_hit_1ch_evts   = new TH1I( "hist_hit_1ch_evts",   "hist_hit_1ch_evts",   m_hist_xbin, m_hist_xmin, m_hist_xmax );
+  m_hist_bit_1ch_int    = new TH1I( "hist_bit_1ch_int",    "hist_bit_1ch_int",    m_hist_xbin, m_hist_xmin, m_hist_xmax );
+  m_hist_hit_1ch_int    = new TH1I( "hist_hit_1ch_int",    "hist_hit_1ch_int",    m_hist_xbin, m_hist_xmin, m_hist_xmax );
+  m_hist_bit_allch_1evt = new TH2I( "hist_bit_allch_1evt", "hist_bit_allch_1evt", m_hist_xbin, m_hist_xmin, m_hist_xmax, m_hist_ybin, m_hist_ymin, m_hist_ymax );
+  m_hist_hit_allch_1evt = new TH2I( "hist_hit_allch_1evt", "hist_hit_allch_1evt", m_hist_xbin, m_hist_xmin, m_hist_xmax, m_hist_ybin, m_hist_ymin, m_hist_ymax );
+  m_hist_bit_allch_evts = new TH2I( "hist_bit_allch_evts", "hist_bit_allch_evts", m_hist_xbin, m_hist_xmin, m_hist_xmax, m_hist_ybin, m_hist_ymin, m_hist_ymax );
+  m_hist_hit_allch_evts = new TH2I( "hist_hit_allch_evts", "hist_hit_allch_evts", m_hist_xbin, m_hist_xmin, m_hist_xmax, m_hist_ybin, m_hist_ymin, m_hist_ymax );
+  m_hist_bit_allch_int  = new TH2I( "hist_bit_allch_int",  "hist_bit_allch_int",  m_hist_xbin, m_hist_xmin, m_hist_xmax, m_hist_ybin, m_hist_ymin, m_hist_ymax );
+  m_hist_hit_allch_int  = new TH2I( "hist_hit_allch_int",  "hist_hit_allch_int",  m_hist_xbin, m_hist_xmin, m_hist_xmax, m_hist_ybin, m_hist_ymin, m_hist_ymax );
 
-  m_graph_nbit = new TGraph();
-  m_graph_nhit = new TGraph();
-  m_graph_nbit->SetTitle( "N_{bit};events;Bits/events" );
-  m_graph_nhit->SetTitle( "N_{hit};events;Hits/events" );
-  m_graph_nbit->SetMarkerColor(2);
-  m_graph_nhit->SetMarkerColor(2);
-  m_graph_nbit->SetMinimum(0.0);
-  m_graph_nhit->SetMinimum(0.0);
-  m_graph_nbit->SetMarkerStyle(20);
-  m_graph_nhit->SetMarkerStyle(20);
-  m_graph_nbit->SetMarkerSize(0.2);
-  m_graph_nhit->SetMarkerSize(0.2);
+  m_hist_width          = new TH1I( "hist_width",          "hist_width",          200, 0, 200 );
+
+  m_graph_nbit  = new TGraph();
+  m_graph_nhit  = new TGraphErrors();
+  m_graph_width = new TGraphErrors();
+  m_graph_nbit ->SetTitle( "N_{bit};events;Bits/events"     );
+  m_graph_nhit ->SetTitle( "N_{hit};events;Hits/events"     );
+  m_graph_width->SetTitle( "Signal Width;events;Width [ns]" );
+  m_graph_nbit ->SetMarkerColor(2);
+  m_graph_nhit ->SetMarkerColor(2);
+  m_graph_width->SetMarkerColor(2);
+  m_graph_nbit ->SetLineColor  (2);
+  m_graph_nhit ->SetLineColor  (2);
+  m_graph_width->SetLineColor  (2);
+  m_graph_nbit ->SetMinimum(0.0);
+  m_graph_nhit ->SetMinimum(0.0);
+  m_graph_width->SetMinimum(0.0);
+  m_graph_nbit ->SetMarkerStyle(20);
+  m_graph_nhit ->SetMarkerStyle(20);
+  m_graph_width->SetMarkerStyle(20);
+  m_graph_nbit ->SetMarkerSize(0.3);
+  m_graph_nhit ->SetMarkerSize(0.3);
+  m_graph_width->SetMarkerSize(0.3);
   
   m_tree->set_writebranch();
   m_tree->init_tree();
@@ -265,14 +230,7 @@ int SampleMonitor::daq_start()
 int SampleMonitor::daq_stop()
 {
   std::cerr << "*** SampleMonitor::stop" << std::endl;
-
-  m_canvas->cd(1); m_hist_1ch_1evt  ->Draw();
-  m_canvas->cd(2); m_hist_1ch_int   ->Draw();
-  m_canvas->cd(3); m_hist_allch_1evt->Draw("COLZ");
-  m_canvas->cd(4); m_hist_allch_int ->Draw("COLZ");
-  m_canvas->cd(5); m_graph_nbit     ->Draw("AP");
-  m_canvas->cd(6); m_graph_nhit     ->Draw("AP");
-  m_canvas->Update();
+  draw_obj();
   
   reset_InPort();
   
@@ -306,72 +264,84 @@ int SampleMonitor::reset_InPort()
 
 int SampleMonitor::fill_data(const unsigned char* mydata, const int size)
 {
-  if( m_tree->decode_data(mydata, size) ) m_nevt_fail++;    // false
-  else                                    m_nevt_success++; // success
+  if( m_tree->decode_data(mydata, size) ){ // false
+    m_nevt_fail++;
+    return 1;
+  }else{ // success
+    m_nevt_success++;
+  }
 
   unsigned long sequence_num = get_sequence_num();
-  int prev_nbit = m_hist_allch_int->GetEntries();
-  for( Int_t ivec=0; ivec<m_tree->getnhit(); ivec++ ){
+
+  for( Int_t ivec=0; ivec<m_tree->getnhit(); ivec++ ){ // read 1 event data
     int obs_ch = m_tree->ch_map(m_tree->get_unit().at(ivec),m_tree->get_bit().at(ivec));
     int time   = m_tree->get_time().at(ivec);
 
-    if( (sequence_num % m_monitor_update_rate) == 0 ){
-      m_hist_allch_1evt->Fill( time, obs_ch );
-      if( m_obs_ch==obs_ch ) m_hist_1ch_1evt->Fill( time );
+    m_hist_bit_allch_1evt->Fill( time, obs_ch );
+    m_hist_bit_allch_evts->Fill( time, obs_ch );
+    m_hist_bit_allch_int ->Fill( time, obs_ch );
+    if( m_obs_ch==obs_ch ){
+      m_hist_bit_1ch_1evt->Fill( time );
+      m_hist_bit_1ch_evts->Fill( time );
+      m_hist_bit_1ch_int ->Fill( time );
     }
-
-    m_hist_allch_int->Fill( time, obs_ch );
-    if( m_obs_ch==obs_ch ) m_hist_1ch_int->Fill( time );
   }
-  
-  m_graph_nbit->SetPoint( m_graph_nbit->GetN(), sequence_num, m_hist_allch_int->GetEntries()-prev_nbit );
-  m_graph_nhit->SetPoint( m_graph_nhit->GetN(), sequence_num, m_hist_allch_int->GetEntries()-prev_nbit );
+
+  detect_signal();
+
+  // input to graph
+  if( (sequence_num % m_monitor_update_rate)==0 && sequence_num ){
+    m_graph_width->SetPoint     ( m_graph_width->GetN(),   sequence_num, m_hist_width->GetMean()             );
+    m_graph_width->SetPointError( m_graph_width->GetN()-1,          0.0, m_hist_width->GetRMS ()             );
+    m_graph_nbit ->SetPoint     ( m_graph_nbit->GetN(),    sequence_num, (double)(     m_hist_bit_allch_evts->GetEntries() /m_monitor_update_rate) );
+    m_graph_nhit ->SetPoint     ( m_graph_nhit->GetN(),    sequence_num, (double)(     m_hist_hit_allch_evts->GetEntries() /m_monitor_update_rate) );
+    m_graph_nhit ->SetPointError( m_graph_nhit->GetN()-1,           0.0, (double)(sqrt(m_hist_hit_allch_evts->GetEntries())/m_monitor_update_rate) );
+  }
 
   return 0;
 }
 
-int SampleMonitor::detect_signal( TH1I* hist ){
-  int  bin_start        = 0;
-  int  bin_end          = 0;
-  int  bin_start_before = 0;
-  bool fl_bin           = false;
-  bool fl_start         = true;
-  int  cnt_nsig         = 0;
-  int  cnt_nring        = 0;
+int SampleMonitor::detect_signal(){
+  for( int ich=0; ich<m_hist_bit_allch_1evt->GetNbinsY(); ich++ ){
+    int  bin_start        = 0;
+    int  bin_end          = 0;
+    int  prev_bin_start   = 0;
+    //int  prev_bin_end     = 0;
+    bool fl_bin_state     = false;
 
-  for( int ibin=0; ibin<hist->GetNbinsX(); ibin++ ){
-    if( hist->GetBinContent(ibin+1) && !fl_bin ){ // edge(up)
-      bin_start = ibin;
-      fl_bin = true;
-    }else if( !hist->GetBinContent(ibin+1) && fl_bin){ // edge(down)
-      bin_end = ibin;
-      fl_bin = false;
+    for( int itime=0; itime<m_hist_bit_allch_1evt->GetNbinsX(); itime++ ){
+      if( m_hist_bit_allch_1evt->GetBinContent(itime+1,ich+1) && !fl_bin_state ){ // detect rising-edge
+	bin_start = itime;
+	fl_bin_state = true;
+      }else if( !m_hist_bit_allch_1evt->GetBinContent(itime+1,ich+1) && fl_bin_state ){ // detect trailing-edge
+	bin_end = itime;
+	fl_bin_state = false;
+	
+	int width = bin_end   - bin_start;
+	int span  = bin_start - prev_bin_start;
+	//int span  = bin_start - prev_bin_end; // which is better ??
+	
+	if( ( span >= th_span || prev_bin_start == 0) && width >= th_width ){ // identified as true signal
+	  m_hist_width->Fill( width );
 
-      int width = bin_end - bin_start;
-      int span  = bin_start - bin_start_before;
-
-      double entry_eff_before = ( bin_start>th_window          ? hist->Integral( bin_start-th_window, bin_start-1           )/((double)th_window) : hist->Integral(1,         bin_start-1 )/(double)(bin_start-1       ) );
-      double entry_eff_after  = ( bin_start<n_time-th_window+2 ? hist->Integral( bin_start,           bin_start+th_window-1 )/((double)th_window) : hist->Integral(bin_start, n_time      )/(double)(n_time-bin_start+1) );
-
-      if( entry_eff_before <= th_eff_before && entry_eff_after >= th_eff_after && ( span > th_span || bin_start_before == 0) && width > th_width ){ // true signal
-	//hist_width  ->Fill( width     );
-	//hist_1ch_int->Fill( bin_start );
-	//hist_wid_tim->Fill( bin_start, width );
-	if( !fl_start ){
-	  //hist_nring->Fill( cnt_nring );
-	  //hist_span ->Fill( span );
+	  m_hist_hit_allch_1evt->Fill( itime, ich );
+	  m_hist_hit_allch_evts->Fill( itime, ich );
+	  m_hist_hit_allch_int ->Fill( itime, ich );
+	  if( m_obs_ch==ich ){
+	    m_hist_hit_1ch_1evt->Fill( itime );
+	    m_hist_hit_1ch_evts->Fill( itime );
+	    m_hist_hit_1ch_int ->Fill( itime );
+	  }
+	  
+	  // for next hits
+	  prev_bin_start = bin_start;
+	  //prev_bin_end   = bin_end;
+	}else{ // identified as ringing
+	  ;
 	}
-	bin_start_before = bin_start;
-	cnt_nsig++;
-	cnt_nring = 0;
-	fl_start = false;
-      }else{ // ringing
-	cnt_nring++;
       }
     }
   }
-  //hist_nring->Fill( cnt_nring );
-  //hist_nsig ->Fill( cnt_nsig );
 
   return 0;
 }
@@ -408,52 +378,105 @@ unsigned int SampleMonitor::read_InPort()
 
 int SampleMonitor::daq_run()
 {
-    if (m_debug) {
-        std::cerr << "*** SampleMonitor::run" << std::endl;
-    }
-
-    unsigned int recv_byte_size = read_InPort();
-    if (recv_byte_size == 0) { // Timeout
-        return 0;
-    }
-
-    check_header_footer(m_in_data, recv_byte_size); // check header and footer
-    m_event_byte_size = get_event_size(recv_byte_size);
-    if (m_event_byte_size > DATA_BUF_SIZE) {
-        fatal_error_report(USER_DEFINED_ERROR1, "DATA BUF TOO SHORT");
-    }
-
-    /////////////  Write component main logic here. /////////////
-    memcpy(&m_recv_data[0], &m_in_data.data[HEADER_BYTE_SIZE], m_event_byte_size);
-    if( m_monitor_update_rate == 0 ) m_monitor_update_rate = 100;
-    unsigned long sequence_num = get_sequence_num();
-    if( (sequence_num % m_monitor_update_rate)==0 ){
-      m_hist_1ch_1evt  ->Reset();
-      m_hist_allch_1evt->Reset();
-    }
-
-
-    fill_data(&m_recv_data[0], m_event_byte_size);
+  if( m_debug ) std::cerr << "*** SampleMonitor::run" << std::endl;
+  unsigned int recv_byte_size = read_InPort();
+  if( recv_byte_size == 0 ) return 0;// Timeout
+  
+  check_header_footer(m_in_data, recv_byte_size); // check header and footer
+  m_event_byte_size = get_event_size(recv_byte_size);
+  if( m_event_byte_size > DATA_BUF_SIZE ) fatal_error_report(USER_DEFINED_ERROR1, "DATA BUF TOO SHORT");
+  
+  /////////////  Write component main logic here. /////////////
+  memcpy(&m_recv_data[0], &m_in_data.data[HEADER_BYTE_SIZE], m_event_byte_size);
+  if( m_monitor_update_rate == 0 ) m_monitor_update_rate = 100;
+  unsigned long sequence_num = get_sequence_num();
+  if( (sequence_num % m_monitor_update_rate)==1 ) reset_obj_per_monitor_update();
+  reset_obj_per_events();
+  
+  fill_data(&m_recv_data[0], m_event_byte_size);
+  
+  // Draw
+  if( (sequence_num % m_monitor_update_rate)==0 && sequence_num ){
+    m_hist_bit_1ch_evts  ->SetTitle( Form("Ch.%d, evtNo.%d;Time [bit];Bits",            m_obs_ch,  (int)sequence_num) );
+    m_hist_hit_1ch_evts  ->SetTitle( Form("Ch.%d, evtNo.%d;Time [bit];Hits",            m_obs_ch,  (int)sequence_num) );
+    m_hist_bit_1ch_int   ->SetTitle( Form("Ch.%d, Integral of %d events;Time [bit];Bits",m_obs_ch, (int)sequence_num) );
+    m_hist_hit_1ch_int   ->SetTitle( Form("Ch.%d, Integral of %d events;Time [bit];Hits",m_obs_ch, (int)sequence_num) );
+    m_hist_bit_allch_evts->SetTitle( Form("Bit (evtNo.%d);Time [bit];Channel",                     (int)sequence_num) );
+    m_hist_hit_allch_evts->SetTitle( Form("Hit (evtNo.%d);Time [bit];Channel",                     (int)sequence_num) );
+    m_hist_bit_allch_int ->SetTitle( Form("Bit (Integral of %d events);Time [bit];Channel",        (int)sequence_num) );
+    m_hist_hit_allch_int ->SetTitle( Form("Hit (Integral of %d events);Time [bit];Channel",        (int)sequence_num) );
     
-    if( (sequence_num % m_monitor_update_rate)==0 ){
-      m_hist_1ch_1evt  ->SetTitle( Form("Ch.%d, evtNo.%d;Time [bit];Hits",            m_obs_ch,  (int)sequence_num) );
-      m_hist_1ch_int   ->SetTitle( Form("Ch.%d, Integral of %d events;Time [bit];Hits",m_obs_ch, (int)sequence_num) );
-      m_hist_allch_1evt->SetTitle( Form("evtNo.%d;Time [bit];Hits",                              (int)sequence_num) );
-      m_hist_allch_int ->SetTitle( Form("Integral of %d events;Time [bit];Hits",                 (int)sequence_num) );
+    draw_obj();
+  }
+  /////////////////////////////////////////////////////////////
+  inc_sequence_num();                      // increase sequence num.
+  inc_total_data_size(m_event_byte_size);  // increase total data byte size
+  
+  return 0;
+}
 
-      m_canvas->cd(1); m_hist_1ch_1evt  ->Draw();
-      m_canvas->cd(2); m_hist_1ch_int   ->Draw();
-      m_canvas->cd(3); m_hist_allch_1evt->Draw("COLZ");
-      m_canvas->cd(4); m_hist_allch_int ->Draw("COLZ");
-      m_canvas->cd(5); m_graph_nbit     ->Draw("AP");
-      m_canvas->cd(6); m_graph_nhit     ->Draw("AP");
-      m_canvas->Update();
-    }
-    /////////////////////////////////////////////////////////////
-    inc_sequence_num();                      // increase sequence num.
-    inc_total_data_size(m_event_byte_size);  // increase total data byte size
+int SampleMonitor::delete_obj(){
 
-    return 0;
+  if( m_canvas ){ delete m_canvas; m_canvas = 0; }
+  
+  if( m_hist_bit_1ch_1evt ){ delete m_hist_bit_1ch_1evt; m_hist_bit_1ch_1evt = 0; }
+  if( m_hist_hit_1ch_1evt ){ delete m_hist_hit_1ch_1evt; m_hist_hit_1ch_1evt = 0; }
+  if( m_hist_bit_1ch_evts ){ delete m_hist_bit_1ch_evts; m_hist_bit_1ch_evts = 0; }
+  if( m_hist_hit_1ch_evts ){ delete m_hist_hit_1ch_evts; m_hist_hit_1ch_evts = 0; }
+  if( m_hist_bit_1ch_int  ){ delete m_hist_bit_1ch_int;  m_hist_bit_1ch_int  = 0; }
+  if( m_hist_hit_1ch_int  ){ delete m_hist_hit_1ch_int;  m_hist_hit_1ch_int  = 0; }
+
+  if( m_hist_bit_allch_1evt ){ delete m_hist_bit_allch_1evt; m_hist_bit_allch_1evt = 0; }
+  if( m_hist_hit_allch_1evt ){ delete m_hist_hit_allch_1evt; m_hist_hit_allch_1evt = 0; }
+  if( m_hist_bit_allch_evts ){ delete m_hist_bit_allch_evts; m_hist_bit_allch_evts = 0; }
+  if( m_hist_hit_allch_evts ){ delete m_hist_hit_allch_evts; m_hist_hit_allch_evts = 0; }
+  if( m_hist_bit_allch_int  ){ delete m_hist_bit_allch_int;  m_hist_bit_allch_int  = 0; }
+  if( m_hist_hit_allch_int  ){ delete m_hist_hit_allch_int;  m_hist_hit_allch_int  = 0; }
+
+  if( m_hist_width  ){ delete m_hist_width;  m_hist_width  = 0; }
+  if( m_graph_nbit  ){ delete m_graph_nbit;  m_graph_nbit  = 0; }
+  if( m_graph_nhit  ){ delete m_graph_nhit;  m_graph_nhit  = 0; }
+  if( m_graph_width ){ delete m_graph_width; m_graph_width = 0; }
+
+  return 0;
+}
+
+int SampleMonitor::draw_obj(){
+  
+  m_canvas->cd( 1); m_hist_bit_1ch_evts  ->Draw();
+  m_canvas->cd( 2); m_hist_hit_1ch_evts  ->Draw();
+  m_canvas->cd( 3); m_hist_bit_1ch_int   ->Draw();
+  m_canvas->cd( 4); m_hist_hit_1ch_int   ->Draw();
+  m_canvas->cd( 5); m_hist_bit_allch_evts->Draw("COLZ");
+  m_canvas->cd( 6); m_hist_hit_allch_evts->Draw("COLZ");
+  m_canvas->cd( 7); m_hist_bit_allch_int ->Draw("COLZ");
+  m_canvas->cd( 8); m_hist_hit_allch_int ->Draw("COLZ");
+  m_canvas->cd( 9); m_graph_nbit     ->Draw("AP");
+  m_canvas->cd(10); m_graph_nhit     ->Draw("AP");
+  m_canvas->cd(11); m_graph_width    ->Draw("AP");
+  m_canvas->Update();
+
+  return 0;
+}
+
+int SampleMonitor::reset_obj_per_monitor_update(){
+  m_hist_bit_1ch_evts  ->Reset();
+  m_hist_hit_1ch_evts  ->Reset();
+  m_hist_bit_allch_evts->Reset();
+  m_hist_hit_allch_evts->Reset();
+
+  return 0;
+}
+
+int SampleMonitor::reset_obj_per_events(){
+  m_hist_bit_1ch_1evt  ->Reset();
+  m_hist_hit_1ch_1evt  ->Reset();
+  m_hist_bit_allch_1evt->Reset();
+  m_hist_hit_allch_1evt->Reset();
+
+  m_hist_width->Reset();
+  
+  return 0;
 }
 
 extern "C"

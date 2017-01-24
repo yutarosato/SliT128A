@@ -47,12 +47,18 @@ class MTree{
   int init_tree();
   int delete_tree();
   int decode_data(const unsigned char* mydata, int length);
-  TTree* gettree(){return m_tree;}
-  int getnhit(){return t_chip_v.size();}
+
+  TTree* gettree   (          ){ return m_tree;               }
+  int    GetEntries(          ){ return m_tree->GetEntries(); }
+  void   readevt   (int ievt=0){ m_tree->GetEntry(ievt);      }
+
+  int getnhit (){ return t_chip_v.size(); }
+  int getevtno(){ return t_event;         }
   std::vector<int> get_chip(){ return t_chip_v; }
   std::vector<int> get_unit(){ return t_unit_v; }
   std::vector<int> get_bit (){ return t_bit_v;  }
   std::vector<int> get_time(){ return t_time_v; }
+
 };
 
 #endif

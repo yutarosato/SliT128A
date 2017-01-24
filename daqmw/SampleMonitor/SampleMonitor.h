@@ -18,11 +18,13 @@
 #include "TH1.h"
 #include "TH2.h"
 #include "TGraph.h"
+#include "TGraphErrors.h"
 #include "TTree.h"
 #include "TCanvas.h"
 #include "TStyle.h"
 #include "TApplication.h"
 #include "TString.h"
+#include "TStyle.h"
 
 #include "../MTree/MTree.h"
 
@@ -61,23 +63,39 @@ private:
   
   int parse_params(::NVList* list);
   int reset_InPort();
+  int delete_obj();
+  int draw_obj();
+  int reset_obj_per_monitor_update();
+  int reset_obj_per_events();
   
   unsigned int read_InPort();
   //int online_analyze();
 
   int fill_data    (const unsigned char* mydata, const int size);
-  int detect_signal( TH1I* hist );
+  int detect_signal();
   
   BufferStatus m_in_status;
   
   ////////// ROOT Histogram //////////
-  TCanvas *m_canvas;
-  TH1I    *m_hist_1ch_1evt;
-  TH1I    *m_hist_1ch_int;
-  TH2I    *m_hist_allch_1evt;
-  TH2I    *m_hist_allch_int;
-  TGraph  *m_graph_nbit;
-  TGraph  *m_graph_nhit;
+  TCanvas* m_canvas;
+  TH1I*    m_hist_bit_1ch_1evt;
+  TH1I*    m_hist_hit_1ch_1evt;
+  TH1I*    m_hist_bit_1ch_evts;
+  TH1I*    m_hist_hit_1ch_evts;
+  TH1I*    m_hist_bit_1ch_int;
+  TH1I*    m_hist_hit_1ch_int;
+  TH2I*    m_hist_bit_allch_1evt;
+  TH2I*    m_hist_hit_allch_1evt;
+  TH2I*    m_hist_bit_allch_evts;
+  TH2I*    m_hist_hit_allch_evts;
+  TH2I*    m_hist_bit_allch_int;
+  TH2I*    m_hist_hit_allch_int;
+
+  TH1I*          m_hist_width;
+  TGraph*        m_graph_nbit;
+  TGraphErrors*  m_graph_nhit;
+  TGraphErrors*  m_graph_width;
+
   
   // external parameters
   int      m_monitor_update_rate;
@@ -92,12 +110,9 @@ private:
   const static int n_bit  =    32;
   const static int n_time =  8192; // pow(2,13)
 
-// signal definition
-const static Int_t    th_span       =   450;
-const static Int_t    th_width      =     2;
-const static Int_t    th_window     =    20;
-const static Double_t th_eff_before =   2.0; // >=1.0 is no-cut
-const static Double_t th_eff_after  =  -1.0; // <=0.0 is no-cut
+  // signal definition
+  const static int th_width = 10; // bin
+  const static int th_span  = 50; // bin
   
   MTree* m_tree;
   int    m_nevt_success;
