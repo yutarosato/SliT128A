@@ -296,31 +296,28 @@ int SampleReader::write_OutPort()
 
 int SampleReader::daq_run()
 {
-    if (m_debug) {
-        std::cerr << "*** SampleReader::run" << std::endl;
-    }
+    if( m_debug ) std::cerr << "*** SampleReader::run" << std::endl;
 
-    if (check_trans_lock()) {  // check if stop command has come
-        set_trans_unlock();    // transit to CONFIGURED state
-        return 0;
+    if( check_trans_lock() ){ // check if stop command has come
+      set_trans_unlock(); // transit to CONFIGURED state
+      return 0;
     }
-
-    if (m_out_status == BUF_SUCCESS) {   // previous OutPort.write() successfully done
-        int ret = read_data_from_detectors();
-        if (ret > 0) {
-            m_recv_byte_size = ret;
-            set_data(m_recv_byte_size); // set data to OutPort Buffer
-        }
+    
+    if( m_out_status == BUF_SUCCESS ){ // previous OutPort.write() successfully done
+      int ret = read_data_from_detectors();
+      if( ret > 0 ){
+	m_recv_byte_size = ret;
+	set_data(m_recv_byte_size); // set data to OutPort Buffer
+      }
     }
-
-    if (write_OutPort() < 0) {
-        ;     // Timeout. do nothing.
+    
+    if( write_OutPort() < 0 ){ // Timeout. do nothing.
+      ;     
+    }else{ // OutPort write successfully done
+      inc_sequence_num();                     // increase sequence num.
+      inc_total_data_size(m_recv_byte_size);  // increase total data byte size
     }
-    else {    // OutPort write successfully done
-        inc_sequence_num();                     // increase sequence num.
-        inc_total_data_size(m_recv_byte_size);  // increase total data byte size
-    }
-
+    
     return 0;
 }
 

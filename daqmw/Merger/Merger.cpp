@@ -76,39 +76,29 @@ Merger::Merger(RTC::Manager* manager)
 /**
  * @brief デストラクタ.終了時にインポートの削除を行う
  */
-Merger::~Merger()
-{
-
-    delete [] m_in_data;
-    delete [] m_InPort;
-
+Merger::~Merger(){
+  delete [] m_in_data;
+  delete [] m_InPort;
 }
 
 
 
 
-RTC::ReturnCode_t Merger::onInitialize()
-{
-    if (m_debug) {
-        std::cerr << "Merger::onInitialize()" << std::endl;
-    }
-
-    return RTC::RTC_OK;
+RTC::ReturnCode_t Merger::onInitialize(){
+  if( m_debug ) std::cerr << "Merger::onInitialize()" << std::endl;
+  return RTC::RTC_OK;
 }
 
-RTC::ReturnCode_t Merger::onExecute(RTC::UniqueId ec_id)
-{
-    daq_do();
-
-    return RTC::RTC_OK;
+RTC::ReturnCode_t Merger::onExecute( RTC::UniqueId ec_id ){
+  daq_do();
+  return RTC::RTC_OK;
 }
 
 /**
  * @brief LOADED, CONFIGURED, PAUSED状態の時に、繰り返し実行.特に何もしない
  */
-int Merger::daq_dummy()
-{
-    return 0;
+int Merger::daq_dummy(){
+  return 0;
 }
 
 
@@ -118,15 +108,14 @@ int Merger::daq_dummy()
  * parse_paramsを呼び、コンフィグレーションファイルからパラメータを取得する
  */
 
-int Merger::daq_configure()
-{
-    std::cerr << "*** Merger::configure" << std::endl;
-
-    ::NVList* paramList;
-    paramList = m_daq_service0.getCompParams();
-    parse_params(paramList);
-
-    return 0;
+int Merger::daq_configure(){
+  std::cerr << "*** Merger::configure" << std::endl;
+  
+  ::NVList* paramList;
+  paramList = m_daq_service0.getCompParams();
+  parse_params(paramList);
+  
+  return 0;
 }
 
 /**
@@ -135,49 +124,42 @@ int Merger::daq_configure()
  * ～Specifiedは、初めは、falseになっている。、パラメータを適切に読み込むことができると、 \n
  * trueになり、最後のif文でエラーにならずに通過できる。
  */
-int Merger::parse_params(::NVList* list)
-{
+int Merger::parse_params(::NVList* list){
 
-    std::cerr << "param list length:" << (*list).length() << std::endl;
-
-    bool separate_flagSpecified = false;
-
-
-    int len = (*list).length();
-    for (int i = 0; i < len; i+=2) {
-        std::string sname  = (std::string)(*list)[i].value;
-        std::string svalue = (std::string)(*list)[i+1].value;
-
-        std::cerr << "sname: " << sname << "  ";
-        std::cerr << "value: " << svalue << std::endl;
-
-        if ( sname == "separate_flag" ) {
-            separate_flagSpecified = true;
-            char *offset;
-            m_separate_flag = (bool)strtol(svalue.c_str(), &offset, 10);
-        }
-        
+  std::cerr << "param list length:" << (*list).length() << std::endl;
+  
+  bool separate_flagSpecified = false;
+  
+  int len = (*list).length();
+  for( int i = 0; i < len; i+=2 ){
+    std::string sname  = (std::string)(*list)[i].value;
+    std::string svalue = (std::string)(*list)[i+1].value;
+    
+    std::cerr << "sname: " << sname << "  ";
+    std::cerr << "value: " << svalue << std::endl;
+    
+    if( sname == "separate_flag" ){
+      separate_flagSpecified = true;
+      char *offset;
+      m_separate_flag = (bool)strtol(svalue.c_str(), &offset, 10);
     }
-
-    if (!separate_flagSpecified) {
-        std::cerr << "### ERROR:separate_flagnot specified\n";
-        fatal_error_report(USER_DEFINED_ERROR1, "NO SEPARATE_FLAG");
-    }
-
-
-
-    return 0;
+  }
+  
+  if( !separate_flagSpecified ){
+    std::cerr << "### ERROR:separate_flagnot specified\n";
+    fatal_error_report(USER_DEFINED_ERROR1, "NO SEPARATE_FLAG");
+  }
+  
+  return 0;
 }
 
 /**
  * @brief unconfigureが実行された場合の処理. 特に何もしない
  *
  */
-int Merger::daq_unconfigure()
-{
-    std::cerr << "*** Merger::unconfigure" << std::endl;
-
-    return 0;
+int Merger::daq_unconfigure(){
+  std::cerr << "*** Merger::unconfigure" << std::endl;
+  return 0;
 }
 
 /**
@@ -186,26 +168,21 @@ int Merger::daq_unconfigure()
  * インポートのデフォルト設定やアウトポートのコネクションのチェックを行う
  */
 
-int Merger::daq_start()
-{
-    std::cerr << "*** Merger::start" << std::endl;
+int Merger::daq_start(){
+  std::cerr << "*** Merger::start" << std::endl;
+  
+  for( int i = 0; i < (int)InPortNum; i++ ) m_in_status[i]  = BUF_SUCCESS;
+  
+  // Check data port connections
+  bool outport_conn = check_dataPort_connections( m_OutPort );
+  if( !outport_conn ){
+    std::cerr << "### NO Connection" << std::endl;
+    fatal_error_report(DATAPATH_DISCONNECTED);
+  }
 
-    for(int i = 0; i < (int)InPortNum; i++){
-        m_in_status[i]  = BUF_SUCCESS;
-    }
-
-
-    // Check data port connections
-    bool outport_conn = check_dataPort_connections( m_OutPort );
-    if (!outport_conn) {
-        std::cerr << "### NO Connection" << std::endl;
-        fatal_error_report(DATAPATH_DISCONNECTED);
-    }
-
-
-    gettimeofday(&m_starttime, NULL);
-
-    return 0;
+  gettimeofday(&m_starttime, NULL);
+  
+  return 0;
 }
 
 
@@ -214,51 +191,42 @@ int Merger::daq_start()
  *
  * reset_InPortを実行
  */
-int Merger::daq_stop()
-{
-    std::cerr << "*** Merger::stop" << std::endl;
-    reset_InPort();
-
-    return 0;
+int Merger::daq_stop(){
+  std::cerr << "*** Merger::stop" << std::endl;
+  reset_InPort();
+  
+  return 0;
 }
 
 /**
  * @brief pauseが実行された場合の処理.特に何もしない
  */
-int Merger::daq_pause()
-{
-    std::cerr << "*** Merger::pause" << std::endl;
-
-    return 0;
+int Merger::daq_pause(){
+  std::cerr << "*** Merger::pause" << std::endl;
+  return 0;
 }
 
 /**
  * @brief resumeが実行された場合の処理.特に何もしない
  */
-int Merger::daq_resume()
-{
-    std::cerr << "*** Merger::resume" << std::endl;
-
-    return 0;
+int Merger::daq_resume(){
+  std::cerr << "*** Merger::resume" << std::endl;
+  return 0;
 }
 
 /**
  * @brief インポートに格納されたデータを読み込む
  */
-int Merger::reset_InPort()
-{
-    int ret = true;
-    for(int i = 0; i < InPortNum; i++){
-        while(ret == true) {
-            ret = m_InPort[i]->read();
-        }
+int Merger::reset_InPort(){
+  int ret = true;
+  for( int i = 0; i < InPortNum; i++ ){
+    while(ret == true){
+      ret = m_InPort[i]->read();
     }
-
-
-    return 0;
+  }
+  
+  return 0;
 }
-
-
 
 
 /**
@@ -272,33 +240,23 @@ int Merger::reset_InPort()
  * データを受け取ることができたら、m_in_data[PortNum]にデータを書き込み、読み込んだデータのサイズを返す \n
  * データが送られてきていないなどで、受け取ることができなかったら、何もせず0を返す。
  */
-unsigned int Merger::read_InPort(int PortNum)
-{
-    /////////////// read data from InPort Buffer ///////////////
-    unsigned int recv_byte_size = 0;
-    bool ret = false;
-
-    ret = m_InPort[PortNum]->read();
-
-
-
-    //////////////////// check read status /////////////////////
-    if (ret == false) { // false: TIMEOUT or FATAL
-
-        m_in_status[PortNum] = check_inPort_status(*m_InPort[PortNum]);
-
-
-        if (m_in_status[PortNum] == BUF_FATAL) { // Fatal error
-            fatal_error_report(INPORT_ERROR);
-        }
-    }
-    else {  // SUCCESS
-        m_in_status[PortNum] = BUF_SUCCESS;
-
-        recv_byte_size = m_in_data[PortNum]->data.length();
-    }
-
-    return recv_byte_size;
+unsigned int Merger::read_InPort(int PortNum){
+  /////////////// read data from InPort Buffer ///////////////
+  unsigned int recv_byte_size = 0;
+  bool         ret            = false;
+  
+  ret = m_InPort[PortNum]->read();
+  
+  //////////////////// check read status /////////////////////
+  if( ret==false ){ // false: TIMEOUT or FATAL
+    m_in_status[PortNum] = check_inPort_status(*m_InPort[PortNum]);
+    if( m_in_status[PortNum] == BUF_FATAL ) fatal_error_report(INPORT_ERROR); // Fatal error
+  }else{ // SUCCESS
+    m_in_status[PortNum] = BUF_SUCCESS;
+    recv_byte_size       = m_in_data[PortNum]->data.length();
+  }
+  
+  return recv_byte_size;
 }
 
 /**
@@ -426,58 +384,46 @@ int Merger::write_OutPort()
  * timeout することなく、データを送ることができるまでfor文でまわり続けている。
  */
 void Merger::data_send(unsigned int event_byte_size){
-
-
-    //case of separete
-    if(m_separate_flag == true){
-        unsigned int send_data = 0;
-        unsigned int one_send_data_size = 0;
-
-        for(;;){
-            //zenbu yonndara owari
-            if(send_data >= event_byte_size){
-                break;
-            }
-
-            //set data
-            one_send_data_size = set_data_separate(send_data);
-
-            //send data
-            for(;;){
-                if (write_OutPort() < 0) {  //Time Out
-                    continue;
-                }
-                else{
-                    m_out_status = BUF_SUCCESS;
-                    inc_sequence_num();                     // increase sequence num.
-                    inc_total_data_size(one_send_data_size);  // increase total data byte size
-                    break;
-                }
-            }
-
-            send_data += one_send_data_size + PORT_BUFFER_SIZE + EVENTSIZE_BUFFER_SIZE;
-        }
+  
+  //case of separete
+  if( m_separate_flag == true ){
+    unsigned int send_data = 0;
+    unsigned int one_send_data_size = 0;
+    
+    for(;;){
+      if( send_data >= event_byte_size ) break; //zenbu yonndara owari
+      one_send_data_size = set_data_separate(send_data); //set data
+      
+      //send data
+      for(;;){
+	if( write_OutPort() < 0) continue; // Time Out
+	else{
+	  m_out_status = BUF_SUCCESS;
+	  inc_sequence_num();                     // increase sequence num.
+	  inc_total_data_size(one_send_data_size);  // increase total data byte size
+	  break;
+	}
+      }
+      
+      send_data += one_send_data_size + PORT_BUFFER_SIZE + EVENTSIZE_BUFFER_SIZE;
     }
-    //case of full 
-    else {
-        //set data
-        set_data_full(event_byte_size);
-
-        //send data
-        for(;;){
-            if (write_OutPort() < 0) {  //Time Out
-                continue;
-            }
-            else{
-                m_out_status = BUF_SUCCESS;
-                inc_sequence_num();                     // increase sequence num.
-                inc_total_data_size(event_byte_size);  // increase total data byte size
-                break;
-            }
-        }
+  }else{ //case of full 
+    //set data
+    set_data_full(event_byte_size);
+    
+    //send data
+    for(;;){
+      if( write_OutPort() < 0 ) continue; //Time Out
+      else{
+	m_out_status = BUF_SUCCESS;
+	inc_sequence_num();                     // increase sequence num.
+	inc_total_data_size(event_byte_size);  // increase total data byte size
+	break;
+      }
     }
-
-    return;
+  }
+  
+  return;
 }
 
 
@@ -494,7 +440,7 @@ void Merger::data_send(unsigned int event_byte_size){
  * for文を利用する理由は、前回のdaq_runにて、データ送信を行い際、TIMEOUTが発生し、再度送る必要ある場合に対応するため。
  * \n
  * リードしたインポートの番号をm_in_getに保存している。次のデータを読むとき（つまり、次回のdaq_runの一回目のfor文）、m_in_get(=m_nextread_ID)を利用して、 \n
- * 前回読み込んだインポートの次のインポートからreadできるかようにしている。\n
+ * 前回読み込んだインポートの次のインポートからreadできるようにしている。\n
  * これは、一つ目のfor文で、リードを行うインポートがかたよらないための処理である。\n
  * \n
  * \n
@@ -509,87 +455,61 @@ void Merger::data_send(unsigned int event_byte_size){
  */
 int Merger::daq_run()
 {
-    if (m_debug) {
-        std::cerr << "*** Merger::run" << std::endl;
-    }
-
-//    if (check_trans_lock()) {     // Check if stop command has come.
-//        set_trans_unlock();       // Transit to CONFIGURE state.
-//    }
-
-
-
-    unsigned int event_byte_size = 0;
-
-    /////////// InPort //////////
-    if(m_out_status != BUF_TIMEOUT)
-    {
-        for (int PortNum = m_nextread_ID + 1; PortNum < InPortNum; PortNum++){ 
-            m_recv_byte_size = read_InPort(PortNum);
-
-            if (m_recv_byte_size != 0) { // no Timeout
- 
-                event_byte_size = get_event_size(m_recv_byte_size);
+  if( m_debug ) std::cerr << "*** Merger::run" << std::endl;
+  
+  unsigned int event_byte_size = 0;
+  
+  /////////// InPort //////////
+  if( m_out_status != BUF_TIMEOUT ){
+    for( int PortNum = m_nextread_ID+1; PortNum<InPortNum; PortNum++ ){ 
+      m_recv_byte_size = read_InPort(PortNum);
+      
+      if( m_recv_byte_size != 0 ){ // no Timeout
+	event_byte_size = get_event_size(m_recv_byte_size);
         
-                if (event_byte_size > RECV_BUFFER_SIZE) {
-                    fatal_error_report(USER_DEFINED_ERROR1, "Length Too Large");
-                }
-        
-                m_in_get = PortNum;
-                break;
-
-
-            }
-
-        }
-
-
-        if(m_in_get==-1){
-            m_nextread_ID = -1;
-        }
-
-
-        if (m_in_get==-1){
-            if (check_trans_lock()) {     // Check if stop command has come.
-                m_stop_flag++;
-                if(m_stop_flag > 100)set_trans_unlock();       // Transit to CONFIGURE state.
-            }
-        }
-
-        //case of TIMEOUT 
-        if (m_in_get==-1) return 0; 
-
-        //set_data(event_byte_size);
-
+	if( event_byte_size > RECV_BUFFER_SIZE ) fatal_error_report(USER_DEFINED_ERROR1, "Length Too Large");
+	
+	m_in_get = PortNum;
+	break;
+      }
+    }
+    
+    if( m_in_get==-1 ) m_nextread_ID = -1;
+    
+    if( m_in_get==-1 ){
+      if( check_trans_lock() ){ // Check if stop command has come.
+	m_stop_flag++;
+	if( m_stop_flag > 100 ) set_trans_unlock(); // Transit to CONFIGURE state.
+      }
     }
 
-    //for debug
-    if(m_in_get == 0){
-        gettimeofday(&m_endtime, NULL);
-    }
+    //case of TIMEOUT 
+    if( m_in_get==-1 ) return 0; 
+    //set_data(event_byte_size);
+  }
+  
+  //for debug
+  if( m_in_get == 0 ) gettimeofday( &m_endtime, NULL );
+  
+  for( int PortNum = 0; PortNum < InPortNum; PortNum++ ){
+    if( m_in_status[PortNum] != BUF_SUCCESS ) continue;
 
-    for(int PortNum = 0; PortNum < InPortNum; PortNum++){
-        if(m_in_status[PortNum] != BUF_SUCCESS){
-            continue;
-        }
-
-        data_send(event_byte_size);
-        m_nextread_ID = m_in_get;
-        m_in_get = -1;
-
-        break;
-    }
-
-    return 0;
+    data_send(event_byte_size);
+    m_nextread_ID = m_in_get;
+    m_in_get = -1;
+    
+    break;
+  }
+  
+  return 0;
 }
 
 extern "C"
 {
-    void MergerInit(RTC::Manager* manager)
-    {
-        RTC::Properties profile(tinysink_spec);
-        manager->registerFactory(profile,
-                    RTC::Create<Merger>,
-                    RTC::Delete<Merger>);
-    }
+  void MergerInit(RTC::Manager* manager){
+    RTC::Properties profile(tinysink_spec);
+    manager->registerFactory(profile,
+			     RTC::Create<Merger>,
+			     RTC::Delete<Merger>);
+  }
 };
