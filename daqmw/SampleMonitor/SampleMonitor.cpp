@@ -145,7 +145,7 @@ int SampleMonitor::parse_params(::NVList* list)
     // If you have more param in config.xml, write here
     if( sname == "sel1ch" ){
       if( m_debug ){
-	std::cerr << "monitor update rate: " << svalue << std::endl;
+	std::cerr << "selected chip: " << svalue << std::endl;
       }
       char *offset;
       m_obs_ch = (int)strtol(svalue.c_str(), &offset, 10);
@@ -274,8 +274,8 @@ int SampleMonitor::fill_data(const unsigned char* mydata, const int size)
   unsigned long sequence_num = get_sequence_num();
 
   for( Int_t ivec=0; ivec<m_tree->getnhit(); ivec++ ){ // read 1 event data
-    int obs_ch = m_tree->ch_map(m_tree->get_unit().at(ivec),m_tree->get_bit().at(ivec));
     int time   = m_tree->get_time().at(ivec);
+    int obs_ch = m_tree->ch_map(m_tree->get_unit().at(ivec),m_tree->get_bit().at(ivec));
 
     m_hist_bit_allch_1evt->Fill( time, obs_ch );
     m_hist_bit_allch_evts->Fill( time, obs_ch );

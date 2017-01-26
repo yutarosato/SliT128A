@@ -194,8 +194,6 @@ int SampleReader::daq_resume()
 
 int SampleReader::read_data_from_detectors()
 {
-
-
     /// write your logic here
     static bool first_read = true;
     static unsigned char tmpbuf[8];
