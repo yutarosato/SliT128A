@@ -22,10 +22,20 @@ echo "   DAC : ${CTRL_DAC} => ${CTRL_DAC_BIT}"
 
 # <Slow Control>
 cd slow_control;
-./make_control.sh 1111111 $CH LLLLL${CTRL_DAC_BIT}LLHLH LLLLLLLLLLLLLLLL # other DAC = 0 # default
+#./make_control.sh 1111111 $CH LLLLL${CTRL_DAC_BIT}LLHLH LLLLLLLLLLLLLLLL # other DAC = 0 # default
+#./make_control.sh 1111111 $CH LLLLL${CTRL_DAC_BIT}LLHLH LLLLL${CTRL_DAC_BIT}LLLLL # other DAC = target DAC
+#./make_control.sh 1111111 $CH LLLLL${CTRL_DAC_BIT}LLHLH LLLLLLLLLLLLLHLH # all tpin is active
+#./make_control.sh 1111111 $CH LLLLL${CTRL_DAC_BIT}LLHLH LLLLL${CTRL_DAC_BIT}LLHLH # all tpin is active, other DAC = target DAC
+
 
 while (1)
-   ./slit128sc control.dat 192.168.10.16;
+   ./slit128sc control.dat 192.168.10.16; # default
+   #./slit128sc control_alltpin_dac0.dat 192.168.10.16; # tmppp
+   #./slit128sc control_alltpin_dacp31.dat 192.168.10.16; # tmppp
+   #./slit128sc control_alltpin_dacn31.dat 192.168.10.16; # tmppp
+   #./slit128sc control_tpin_unit3_dac0.dat 192.168.10.16; # tmppp
+   #./slit128sc control_tpin_unit2_dacp31.dat 192.168.10.16; # tmppp
+   #./slit128sc control_tpin_unit0_dacn31.dat 192.168.10.16; # tmppp
    if( $? == 0 ) then
       break
    endif
@@ -37,7 +47,7 @@ set OUTNAME = "test.dat"
 # <Take Data>
 cd ../
 nc -d 192.168.10.16 24 > test.dat &
-sleep 1
+sleep 16
 kill -9 $!
 
 # <Decode>
@@ -47,6 +57,6 @@ cd ../
 
 # <Plot>
 cd ana;
-#./qc_allch ../test.root
-./qc_onech ../test.root ${CH} ${CH} ${CTRL_DAC}
+./qc_allch ../test.root
+#./qc_onech ../test.root ${CH} ${CH} ${CTRL_DAC}
 

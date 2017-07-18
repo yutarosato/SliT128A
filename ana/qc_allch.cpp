@@ -1,7 +1,7 @@
 #include "setting.h"
 
 const Bool_t fl_batch = !true; // should be false for quick check.
-const Int_t  fl_show  = 5;
+const Int_t  fl_show  = 2;
 
 Int_t main( Int_t argc, Char_t** argv ){
   gROOT->SetBatch(fl_batch);
@@ -26,10 +26,12 @@ Int_t main( Int_t argc, Char_t** argv ){
   
   printf( "[input] %s : %d entries\n", infilename, (Int_t)chain->GetEntries() );
   //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  TH2C* hist     = new TH2C("hist",    "hist;             Time;Channel",n_time, 0, n_time, n_unit*n_bit, 0, n_unit*n_bit );
-  TH2C* hist_int = new TH2C("hist_int","hist(integration);Time;Channel",n_time, 0, n_time, n_unit*n_bit, 0, n_unit*n_bit );
-  TCanvas* can = new TCanvas("can","can", 1600, 800 );
-  can->Divide(1,2);
+  TH2C* hist          = new TH2C("hist",         "hist;             Time;Channel",         n_time, 0, n_time, n_unit*n_bit, 0, n_unit*n_bit );
+  TH2C* hist_int      = new TH2C("hist_int",     "hist(integration);Time;Channel",         n_time, 0, n_time, n_unit*n_bit, 0, n_unit*n_bit );
+  TH2C* hist_miss     = new TH2C("hist_miss",    "hist(bit-fall);Time;Channel",            n_time, 0, n_time,            4, 0, n_unit       );
+  TH2C* hist_miss_int = new TH2C("hist_miss_int","hist(bit-fall,integration);Time;Channel",n_time, 0, n_time,            4, 0, n_unit       );
+  TCanvas* can = new TCanvas("can","can", 1800, 800 );
+  can->Divide(1,4);
   can->Draw();
   //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   Int_t cnt_show = 0;
@@ -39,6 +41,10 @@ Int_t main( Int_t argc, Char_t** argv ){
       hist    ->Fill( t_time_v->at(ivec), ch_map(t_unit_v->at(ivec),t_bit_v->at(ivec)) );
       hist_int->Fill( t_time_v->at(ivec), ch_map(t_unit_v->at(ivec),t_bit_v->at(ivec)) );
     }
+    for( Int_t ivec=0; ivec<t_unit_miss_v->size(); ivec++ ){
+      hist_miss    ->Fill( t_time_miss_v->at(ivec), t_unit_miss_v->at(ivec) );
+      hist_miss_int->Fill( t_time_miss_v->at(ivec), t_unit_miss_v->at(ivec) );
+    }
     if( fl_show>cnt_show ){
       printf( "  [Event:%d,Chip:%d] %d entries\n", t_event,t_chip, (Int_t)hist->Integral() );
       hist    ->SetTitle( Form("Event : %d, Chip : %d, %d entries", t_event,t_chip, (Int_t)hist->Integral()) );
@@ -47,15 +53,23 @@ Int_t main( Int_t argc, Char_t** argv ){
       hist->Draw("COLZ");
       can->cd(2);
       hist_int->Draw("COLZ");
+      can->cd(3);
+      hist_miss->Draw("COLZ");
+      can->cd(4);
+      hist_miss_int->Draw("COLZ");
       can->Update();
       can->WaitPrimitive();
-      hist->Reset();
+      hist     ->Reset();
+      hist_miss->Reset();
     }
     cnt_show++;
   }
   can->cd(2);
   hist_int->SetTitle( Form("Chip : %d, Integration of %d events", t_chip, cnt_show) );
   hist_int->Draw("COLZ");
+  can->cd(4);
+  hist_miss_int->SetTitle( Form("Chip : %d, Integration of %d events, %d entries", t_chip, cnt_show, (int)hist_miss_int->Integral()) );
+  hist_miss_int->Draw("COLZ");
   can->Update();
   can->WaitPrimitive();
   //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

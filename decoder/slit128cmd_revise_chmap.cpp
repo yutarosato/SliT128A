@@ -34,8 +34,16 @@ int t_chip;
 int t_unit;
 int t_time;
 int t_data[n_bit];
+int t_chip_miss;
+int t_unit_miss;
+int t_time_miss;
+
 
 int cnt_data = 0; // used for judgement of the endpoint of s-curve
+int cnt_bitfall =0;
+int cnt_bitfall_total =0;
+int cnt_bitfall_array[4] = {0};
+int fl_bitfall =-999;
 
 TTree* tree;
 int t_event;
@@ -43,6 +51,10 @@ std::vector<int> t_chip_v;
 std::vector<int> t_unit_v;
 std::vector<int> t_bit_v;
 std::vector<int> t_time_v;
+
+std::vector<int> t_chip_miss_v;
+std::vector<int> t_unit_miss_v;
+std::vector<int> t_time_miss_v;
 
 float t_vref  = -999;
 float t_tpchg = -999;
@@ -121,6 +133,9 @@ int set_tree(){
   tree->Branch( "tpchg",  &t_tpchg, "tpchg/F" );
   tree->Branch( "selch",  &t_selch, "selch/I" );
   tree->Branch( "dac",    &t_dac,   "dac/I"   );
+  tree->Branch( "chip_miss",   &t_chip_miss_v );
+  tree->Branch( "unit_miss",   &t_unit_miss_v );
+  tree->Branch( "time_miss",   &t_time_miss_v );
 
   return 0;
 }
@@ -131,6 +146,9 @@ int init_tree(){
   t_unit_v.clear();
   t_bit_v.clear();
   t_time_v.clear();
+  t_chip_miss_v.clear();
+  t_unit_miss_v.clear();
+  t_time_miss_v.clear();
   
   return 0;
 }
@@ -175,6 +193,36 @@ int decode( unsigned char *buf, int length ){
     t_chip  = chip_id;
     t_unit  = unit_id;
     t_time = ntohs(*time_info);
+
+    t_chip_miss = t_chip; // bit-fall study
+    t_time_miss = t_time; // bit-fall study
+
+    cnt_bitfall_total++;
+    if( fl_bitfall<0 ) fl_bitfall = t_time;
+    if( fl_bitfall==t_time ){
+      cnt_bitfall++;
+      //printf("CONTINUE : t = %d : %d\n",t_time,cnt_bitfall);
+    }else{
+      //printf("DET NEXT TIME : t = %d : %d\n",t_time,cnt_bitfall);
+      if( cnt_bitfall!=4 ){
+	//printf("     => BITFALL : t = %d=>%d : %d : unit_id = ",fl_bitfall,t_time,cnt_bitfall );
+	int fl_bitfall_det[4] = {0};
+	for( int ifall=0; ifall<cnt_bitfall; ifall++ ) fl_bitfall_det[cnt_bitfall_array[ifall]]++;
+	for( int ifall=0; ifall<4;           ifall++ ){
+	  if(fl_bitfall_det[ifall]==0){
+	    //printf("%d,",ifall);
+	    t_unit_miss = ifall;
+	    t_chip_miss_v.push_back(t_chip_miss);
+	    t_unit_miss_v.push_back(t_unit_miss);
+	    t_time_miss_v.push_back(t_time_miss);
+	  }
+	}
+	//printf("\n");
+      }
+      cnt_bitfall = 1;
+      fl_bitfall = t_time;
+    }
+    cnt_bitfall_array[cnt_bitfall-1] = t_unit;
 
     //t_unit = unit_id_mapping( t_unit ); // unit-ID correction // removed for ch-map correction@20161004
 
@@ -224,7 +272,10 @@ int decode( unsigned char *buf, int length ){
         if( fl_message   ) printf( "=>[ Event#=%d : #Data=%d+3 ]\n", t_event, ndata );
 	if( ndata!=32765 ){
 	  printf( "=>[ Event#=%d : #Data=%d+3 ] * lost data event : not saved int tree\n", t_event, ndata );
-	  nevt_fail++;
+	  tree->Fill(); // tmpppp
+	  cnt_data += t_time_v.size();// tmpppp
+	  nevt_success++; // tmpppp
+	  //nevt_fail++;
 	}else{
 	  tree->Fill();
 	  cnt_data += t_time_v.size();

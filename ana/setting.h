@@ -48,6 +48,10 @@ std::vector<int>* t_unit_v;
 std::vector<int>* t_bit_v;
 std::vector<int>* t_time_v;
 
+std::vector<int>* t_chip_miss_v;
+std::vector<int>* t_unit_miss_v;
+std::vector<int>* t_time_miss_v;
+
 Float_t t_vref;
 Float_t t_tpchg;
 Int_t   t_selch;
@@ -170,6 +174,9 @@ Int_t set_readbranch( TChain* tree ){
   tree->SetBranchAddress("unit",  &t_unit_v  );
   tree->SetBranchAddress("bit",   &t_bit_v   );
   tree->SetBranchAddress("time",  &t_time_v  );
+  tree->SetBranchAddress("chip_miss",  &t_chip_miss_v  );
+  tree->SetBranchAddress("unit_miss",  &t_unit_miss_v  );
+  tree->SetBranchAddress("time_miss",  &t_time_miss_v  );
 
   return 0;
 }
@@ -182,6 +189,9 @@ Int_t set_readbranch( TTree* tree ){
   tree->SetBranchAddress("unit",  &t_unit_v  );
   tree->SetBranchAddress("bit",   &t_bit_v   );
   tree->SetBranchAddress("time",  &t_time_v  );
+  tree->SetBranchAddress("chip_miss",  &t_chip_miss_v  );
+  tree->SetBranchAddress("unit_miss",  &t_unit_miss_v  );
+  tree->SetBranchAddress("time_miss",  &t_time_miss_v  );
 
   return 0;
 }
@@ -217,6 +227,9 @@ Int_t set_tree( TTree* tree ){// for modify tree @20160822
   tree->Branch( "tpchg",  &t_tpchg, "tpchg/F" );
   tree->Branch( "selch",  &t_selch, "selch/I" );
   tree->Branch( "dac",    &t_dac,   "dac/I"   );
+  tree->Branch( "chip_miss",   &t_chip_miss_v );
+  tree->Branch( "unit_miss",   &t_unit_miss_v );
+  tree->Branch( "time_miss",   &t_time_miss_v );
 
   return 0;
 }
