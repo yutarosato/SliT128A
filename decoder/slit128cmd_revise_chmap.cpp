@@ -38,7 +38,6 @@ int t_chip_miss;
 int t_unit_miss;
 int t_time_miss;
 
-
 int cnt_data = 0; // used for judgement of the endpoint of s-curve
 int cnt_bitfall =0;
 int cnt_bitfall_total =0;

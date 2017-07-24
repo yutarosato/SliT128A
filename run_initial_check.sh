@@ -47,7 +47,7 @@ set OUTNAME = "test.dat"
 # <Take Data>
 cd ../
 nc -d 192.168.10.16 24 > test.dat &
-sleep 16
+sleep 3
 kill -9 $!
 
 # <Decode>
